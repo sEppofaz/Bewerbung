@@ -1,0 +1,8 @@
+bewerbung.db
+icons/
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+assets/lebenslauf.pdf

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e3a5f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="JF Bewerbung">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<title>Josef Fischer – Bewerbung</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:   #1e3a5f;
+  --accent: #4a90d9;
+  --bg:     #f5f5f7;
+  --bg2:    #ffffff;
+  --bg3:    #e8e8ed;
+  --text:   #1a1a1a;
+  --text2:  #555;
+  --muted:  #6e6e73;
+  --border: #e0e0e5;
+  --green:  #34c759;
+  --red:    #ff3b30;
+  --chip:   #f0f0f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:    #1c1c1e; --bg2:  #2c2c2e; --bg3:  #3a3a3c;
+    --text:  #ffffff; --text2:#ccc;    --muted: #aeaeb2;
+    --border:#3a3a3c; --chip: #3a3a3c;
+  }
+}
+
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── PTR ── */
+.ptr { position: fixed; top: -60px; left: 50%; transform: translateX(-50%); background: var(--bg2); border-radius: 20px; padding: 8px 16px; font-size: .85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 12px rgba(0,0,0,.15); transition: top .2s ease; z-index: 100; }
+.ptr.show { top: calc(env(safe-area-inset-top) + 10px); }
+.ptr-spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--bg3); border-top-color: var(--accent); animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Header ── */
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--navy);
+  padding: calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));
+  display: flex; align-items: center; gap: 12px;
+}
+.hd-name { flex: 1; }
+.hd-title { font-size: 17px; font-weight: 700; color: #fff; }
+.hd-sub   { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 1px; }
+.hd-right { display: flex; align-items: center; gap: 8px; }
+
+.lang-btn { background: rgba(255,255,255,.15); border: none; color: #fff; padding: 5px 9px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.lang-btn.active { background: rgba(255,255,255,.35); }
+
+#btn-info { background: rgba(255,255,255,.15); border: none; color: #fff; height: 34px; padding: 0 12px; border-radius: 9px; font-size: 13px; font-weight: 600; letter-spacing: .3px; cursor: pointer; transition: background .15s; }
+#btn-info:active { background: rgba(255,255,255,.3); }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex; gap: 0;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; padding: 0 4px;
+  position: sticky; top: calc(52px + env(safe-area-inset-top)); z-index: 40;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 6px;
+  padding: 12px 16px;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer; transition: color .15s, border-color .15s;
+  white-space: nowrap; min-height: 44px;
+  background: none; border-top: none; border-left: none; border-right: none;
+}
+.tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+@media (prefers-color-scheme: dark) { .tab.active { color: var(--accent); border-bottom-color: var(--accent); } }
+
+/* ── Main ── */
+main {
+  padding: 20px calc(16px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+  max-width: 800px; margin: 0 auto; width: 100%;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── Über mich ── */
+.profile-card {
+  background: var(--bg2); border-radius: 16px; padding: 24px;
+  margin-bottom: 16px; border: 1px solid var(--border);
+}
+.profile-top { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.profile-avatar {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: var(--navy); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profile-name { font-size: 22px; font-weight: 700; }
+.profile-role { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.profile-text { font-size: 15px; line-height: 1.65; color: var(--text); }
+
+.section-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin: 20px 0 10px; }
+
+.skills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.skill-chip {
+  padding: 6px 14px; background: var(--chip); border-radius: 20px;
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+}
+.skill-chip.highlight { background: var(--navy); color: #fff; }
+
+.info-card { background: var(--bg2); border-radius: 16px; padding: 20px 24px; border: 1px solid var(--border); margin-bottom: 12px; }
+.info-card-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.info-card-text { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.info-card-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.info-card-list li { font-size: 14px; color: var(--text2); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+.info-card-list li::before { content: "→"; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+/* ── Lebenslauf ── */
+.cv-header { background: var(--navy); color: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+.cv-h-name { font-size: 26px; font-weight: 800; }
+.cv-h-title { font-size: 15px; color: rgba(255,255,255,.7); margin-top: 4px; }
+.cv-h-contacts { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
+.cv-h-contact { font-size: 13px; color: rgba(255,255,255,.8); display: flex; align-items: center; gap: 6px; text-decoration: none; }
+
+.cv-section { background: var(--bg2); border-radius: 16px; padding: 20px 24px; margin-bottom: 12px; border: 1px solid var(--border); }
+.cv-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--accent); margin-bottom: 14px; }
+
+.cv-entry { margin-bottom: 16px; }
+.cv-entry:last-child { margin-bottom: 0; }
+.cv-entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.cv-entry-title { font-size: 15px; font-weight: 700; }
+.cv-entry-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.cv-entry-sub { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+.cv-entry-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.cv-entry-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.cv-entry-list li { font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 6px; }
+.cv-entry-list li::before { content: "·"; color: var(--accent); font-weight: 900; flex-shrink: 0; }
+
+.cv-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+.btn-pdf {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 14px;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: 12px; margin-bottom: 20px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  text-decoration: none; min-height: 50px;
+}
+.btn-pdf:active { opacity: .8; }
+
+/* ── Projekte ── */
+.projects-grid { display: flex; flex-direction: column; gap: 14px; }
+.proj-card {
+  background: var(--bg2); border-radius: 16px; padding: 20px;
+  border: 1px solid var(--border); transition: box-shadow .2s;
+}
+.proj-card:active { box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+.proj-top { display: flex; align-items: flex-start; gap: 14px; }
+.proj-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.proj-info { flex: 1; }
+.proj-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.proj-cat { font-size: 12px; color: var(--muted); }
+.proj-link { color: var(--accent); }
+.proj-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin: 10px 0; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.proj-tag { padding: 4px 10px; background: var(--chip); border-radius: 6px; font-size: 12px; color: var(--muted); }
+.proj-tag.ai { background: #0c1a3a; color: #bfdbfe; }
+.proj-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; padding: 4px 10px; background: #052e16; color: #bbf7d0; border-radius: 6px; font-size: 11px; font-weight: 600; }
+
+/* ── Kontakt ── */
+.contact-card { background: var(--bg2); border-radius: 16px; padding: 24px; border: 1px solid var(--border); margin-bottom: 14px; }
+.contact-card-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.contact-card-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.form-input, .form-textarea { padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); outline: none; font-family: inherit; transition: border-color .2s; }
+.form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 100px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+.btn-send { width: 100%; padding: 14px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 50px; margin-top: 4px; }
+.btn-send:active { opacity: .8; }
+.btn-send:disabled { opacity: .5; }
+.form-msg { margin-top: 12px; padding: 10px 14px; border-radius: 10px; font-size: 13px; display: none; }
+.form-msg.ok  { display: block; background: #052e16; color: #bbf7d0; }
+.form-msg.err { display: block; background: #450a0a; color: #fecaca; }
+
+.email-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; text-decoration: none; color: var(--text);
+  font-size: 14px; font-weight: 600;
+}
+.email-btn:active { background: var(--bg3); }
+
+/* ── Info Overlay ── */
+#info-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.4); }
+#info-overlay.show { display: flex; align-items: flex-end; }
+#info-sheet { background: var(--bg2); border-radius: 20px 20px 0 0; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 -4px 20px rgba(0,0,0,.15); }
+#info-sheet-hd { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+#btn-info-close { background: var(--chip); border: none; border-radius: 16px; padding: 5px 14px; font-size: 13px; cursor: pointer; color: var(--text); }
+#info-sheet-body { overflow-y: auto; padding: 16px 16px calc(20px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling: touch; }
+.info-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.info-row:last-of-type { border-bottom: none; }
+.info-row-icon { flex-shrink: 0; width: 26px; margin-top: 1px; color: var(--muted); }
+.info-row-text { font-size: 14px; line-height: 1.5; color: var(--text); }
+.info-row-text strong { color: var(--text); }
+.btn-logout { width: 100%; padding: 14px; background: var(--red, #ff3b30); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; min-height: 50px; margin-top: 16px; }
+.btn-logout:active { opacity: .8; }
+
+/* ── Back-to-top ── */
+.back-top { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); right: 16px; width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: #fff; border: none; font-size: 20px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.25); display: none; align-items: center; justify-content: center; z-index: 200; transition: opacity .2s; }
+.back-top.vis { display: flex; }
+.back-top:active { opacity: .7; }
+</style>
+</head>
+<body>
+
+<div class="ptr" id="ptr"><div class="ptr-spin"></div> <span data-de="Aktualisiere…" data-en="Refreshing…">Aktualisiere…</span></div>
+
+<!-- Header -->
+<header>
+  <div class="hd-name">
+    <div class="hd-title">Josef Fischer</div>
+    <div class="hd-sub" id="hd-firma"></div>
+  </div>
+  <div class="hd-right">
+    <button class="lang-btn active" onclick="setLang('de')" id="btn-de">DE</button>
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+    <button id="btn-info" onclick="document.getElementById('info-overlay').classList.add('show')">Info</button>
+  </div>
+</header>
+
+<!-- Tabs -->
+<div class="tabs" id="tabs">
+  <button class="tab active" onclick="showTab('ueber')" id="tab-ueber">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-de="Über mich" data-en="About">Über mich</span>
+  </button>
+  <button class="tab" onclick="showTab('cv')" id="tab-cv">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span data-de="Lebenslauf" data-en="CV">Lebenslauf</span>
+  </button>
+  <button class="tab" onclick="showTab('projekte')" id="tab-projekte">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    <span data-de="Projekte" data-en="Projects">Projekte</span>
+  </button>
+  <button class="tab" onclick="showTab('kontakt')" id="tab-kontakt">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span data-de="Kontakt" data-en="Contact">Kontakt</span>
+  </button>
+</div>
+
+<main>
+
+<!-- ── ÜBER MICH ── -->
+<div class="screen active" id="screen-ueber">
+  <div class="profile-card">
+    <div class="profile-top">
+      <div class="profile-avatar">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div>
+        <div class="profile-name">Josef Fischer</div>
+        <div class="profile-role" data-de="Vibe-Coder · PWA-Entwickler · Automatisierer" data-en="Vibe-Coder · PWA Developer · Automator">
+          Vibe-Coder · PWA-Entwickler · Automatisierer
+        </div>
+      </div>
+    </div>
+    <!-- INHALT EINTRAGEN -->
+    <div class="profile-text" data-de="[Kurzvorstellung – 3–5 Sätze über dich, deine Motivation und deinen Arbeitsstil]" data-en="[Short intro – 3–5 sentences about you, your motivation and work style]">
+      [Kurzvorstellung – 3–5 Sätze über dich, deine Motivation und deinen Arbeitsstil]
+    </div>
+  </div>
+
+  <div class="section-title" data-de="Was ich kann" data-en="What I do">Was ich kann</div>
+  <div class="skills-grid">
+    <div class="skill-chip highlight">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      AI-assisted Development
+    </div>
+    <div class="skill-chip">Progressive Web Apps</div>
+    <div class="skill-chip">FastAPI / Python</div>
+    <div class="skill-chip">HTML · CSS · JavaScript</div>
+    <div class="skill-chip">Linux / Hetzner</div>
+    <div class="skill-chip">nginx</div>
+    <div class="skill-chip">SQLite</div>
+    <div class="skill-chip">Git / GitHub</div>
+    <div class="skill-chip">Telegram Bot API</div>
+    <div class="skill-chip">Prozessautomatisierung</div>
+    <!-- weitere Skills nach Bedarf -->
+  </div>
+
+  <div class="section-title" data-de="Was ich suche" data-en="What I'm looking for">Was ich suche</div>
+  <div class="info-card">
+    <div class="info-card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span data-de="Meine Wunschstelle" data-en="My ideal role">Meine Wunschstelle</span>
+    </div>
+    <ul class="info-card-list">
+      <!-- INHALT EINTRAGEN -->
+      <li data-de="[Punkt 1 – z.B. Teilzeit / Vollzeit / Remote]" data-en="[Point 1]">[Punkt 1 – z.B. Teilzeit / Vollzeit / Remote]</li>
+      <li data-de="[Punkt 2 – Bereich / Branche]" data-en="[Point 2]">[Punkt 2 – Bereich / Branche]</li>
+      <li data-de="[Punkt 3 – Standort / Region]" data-en="[Point 3]">[Punkt 3 – Standort / Region]</li>
+    </ul>
+  </div>
+
+  <div class="section-title" data-de="Besonderheit" data-en="Highlight">Besonderheit</div>
+  <div class="info-card">
+    <div class="info-card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span data-de="Vibe-Coding mit Claude Code" data-en="Vibe-Coding with Claude Code">Vibe-Coding mit Claude Code</span>
+    </div>
+    <div class="info-card-text" data-de="Alle Projekte auf dieser Seite wurden im Pair-Programming mit Claude Code entwickelt – einem KI-gestützten Entwicklungspartner von Anthropic. Das ermöglicht mir, komplexe Anwendungen schnell und eigenständig umzusetzen, ohne klassisches Informatikstudium." data-en="All projects on this page were developed in pair-programming with Claude Code – an AI-powered development partner by Anthropic. This allows me to build complex applications quickly and independently, without a traditional computer science degree.">
+      Alle Projekte auf dieser Seite wurden im Pair-Programming mit Claude Code entwickelt – einem KI-gestützten Entwicklungspartner von Anthropic. Das ermöglicht mir, komplexe Anwendungen schnell und eigenständig umzusetzen, ohne klassisches Informatikstudium.
+    </div>
+  </div>
+</div>
+
+<!-- ── LEBENSLAUF ── -->
+<div class="screen" id="screen-cv">
+  <a class="btn-pdf" href="/assets/lebenslauf.pdf" download="Lebenslauf_Josef_Fischer.pdf">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span data-de="Lebenslauf als PDF herunterladen" data-en="Download CV as PDF">Lebenslauf als PDF herunterladen</span>
+  </a>
+
+  <div class="cv-header">
+    <div class="cv-h-name">Josef Fischer</div>
+    <div class="cv-h-title" data-de="[BERUFSBEZEICHNUNG / POSITIONSBEZEICHNUNG]" data-en="[JOB TITLE / POSITION]">[BERUFSBEZEICHNUNG / POSITIONSBEZEICHNUNG]</div>
+    <div class="cv-h-contacts">
+      <a class="cv-h-contact" href="mailto:josef.jf.fischer@me.com">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        josef.jf.fischer@me.com
+      </a>
+      <!-- weitere Kontaktdaten eintragen -->
+    </div>
+  </div>
+
+  <!-- Berufserfahrung -->
+  <div class="cv-section">
+    <div class="cv-section-title" data-de="Berufserfahrung" data-en="Work Experience">Berufserfahrung</div>
+    <!-- EINTRÄGE EINTRAGEN – Vorlage: -->
+    <div class="cv-entry">
+      <div class="cv-entry-head">
+        <div class="cv-entry-title" data-de="[Stellenbezeichnung]" data-en="[Job Title]">[Stellenbezeichnung]</div>
+        <div class="cv-entry-date">[MM/JJJJ – MM/JJJJ]</div>
+      </div>
+      <div class="cv-entry-sub">[Arbeitgeber · Ort]</div>
+      <ul class="cv-entry-list">
+        <li data-de="[Aufgabe / Erfolg 1]" data-en="[Task / Achievement 1]">[Aufgabe / Erfolg 1]</li>
+        <li data-de="[Aufgabe / Erfolg 2]" data-en="[Task / Achievement 2]">[Aufgabe / Erfolg 2]</li>
+      </ul>
+    </div>
+    <hr class="cv-divider">
+    <div class="cv-entry">
+      <div class="cv-entry-head">
+        <div class="cv-entry-title" data-de="[Weitere Stelle]" data-en="[Next Role]">[Weitere Stelle]</div>
+        <div class="cv-entry-date">[MM/JJJJ – MM/JJJJ]</div>
+      </div>
+      <div class="cv-entry-sub">[Arbeitgeber · Ort]</div>
+      <div class="cv-entry-text" data-de="[Kurzbeschreibung]" data-en="[Short description]">[Kurzbeschreibung]</div>
+    </div>
+  </div>
+
+  <!-- Ausbildung -->
+  <div class="cv-section">
+    <div class="cv-section-title" data-de="Ausbildung" data-en="Education">Ausbildung</div>
+    <div class="cv-entry">
+      <div class="cv-entry-head">
+        <div class="cv-entry-title" data-de="[Abschluss / Ausbildungsbezeichnung]" data-en="[Degree / Training]">[Abschluss / Ausbildungsbezeichnung]</div>
+        <div class="cv-entry-date">[JJJJ – JJJJ]</div>
+      </div>
+      <div class="cv-entry-sub">[Schule / Hochschule / Betrieb · Ort]</div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="cv-section">
+    <div class="cv-section-title" data-de="Kenntnisse & Skills" data-en="Skills">Kenntnisse &amp; Skills</div>
+    <div class="skills-grid">
+      <div class="skill-chip highlight">AI-assisted Development</div>
+      <div class="skill-chip">Progressive Web Apps</div>
+      <div class="skill-chip">FastAPI · Python</div>
+      <div class="skill-chip">HTML · CSS · JS</div>
+      <div class="skill-chip">Linux / Server-Administration</div>
+      <div class="skill-chip">Git · GitHub</div>
+      <div class="skill-chip">SQLite</div>
+      <div class="skill-chip">Prozessautomatisierung</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROJEKTE ── -->
+<div class="screen" id="screen-projekte">
+  <div class="projects-grid">
+
+    <!-- Vereinskalender -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="Community Event Calendar" data-en="Community Event Calendar">Community Event Calendar</div>
+          <div class="proj-cat">vereinskalender.online &nbsp;·&nbsp; <a class="proj-link" href="https://vereinskalender.online" target="_blank" rel="noopener" data-de="Live ansehen" data-en="View live">Live ansehen</a></div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="PWA für Vereine und Gemeinden zur Verwaltung und Anzeige von Veranstaltungen. Mehrsprachig (DE/EN), Offline-fähig, Admin-Bereich mit Vereinsverwaltung, Telegram-Bot-Integration, automatische Exportfunktionen." data-en="PWA for clubs and communities to manage and display events. Multilingual (DE/EN), offline-capable, admin area with club management, Telegram bot integration, automatic export functions.">
+        PWA für Vereine und Gemeinden zur Verwaltung und Anzeige von Veranstaltungen. Mehrsprachig (DE/EN), Offline-fähig, Admin-Bereich mit Vereinsverwaltung, Telegram-Bot-Integration, automatische Exportfunktionen.
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">FastAPI</span><span class="proj-tag">SQLite</span><span class="proj-tag">PWA</span><span class="proj-tag">Telegram Bot</span><span class="proj-tag">nginx</span>
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+    <!-- AI Remote -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="AI Remote Interface" data-en="AI Remote Interface">AI Remote Interface</div>
+          <div class="proj-cat" data-de="Internes Tool · Self-hosted" data-en="Internal tool · Self-hosted">Internes Tool · Self-hosted</div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="Web-Interface zur Fernsteuerung eines lokal laufenden KI-Assistenten (Claude Code) über einen selbst-gehosteten Server. Ermöglicht die Nutzung von AI-Unterstützung von überall, ohne die Daten in die Cloud zu senden." data-en="Web interface for remotely controlling a locally running AI assistant (Claude Code) via a self-hosted server. Enables AI assistance from anywhere without sending data to the cloud.">
+        Web-Interface zur Fernsteuerung eines lokal laufenden KI-Assistenten über einen selbst-gehosteten Server. Ermöglicht die Nutzung von AI-Unterstützung von überall, ohne die Daten in die Cloud zu senden.
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">Flask</span><span class="proj-tag">WebSocket</span><span class="proj-tag">nginx</span><span class="proj-tag">Hetzner</span><span class="proj-tag ai">AI</span>
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+    <!-- Dokument-Prozessor -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="Dokument-Automatisierung" data-en="Document Automation">Dokument-Automatisierung</div>
+          <div class="proj-cat" data-de="Webhook-Service · Self-hosted" data-en="Webhook service · Self-hosted">Webhook-Service · Self-hosted</div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="Automatischer Service der gescannte Dokumente aus einem Dropbox-Ordner per KI analysiert, benennt und kategorisiert. Läuft vollautomatisch als Hintergrundservice auf einem eigenen Server." data-en="Automated service that analyses, names and categorises scanned documents from a Dropbox folder using AI. Runs fully automatically as a background service on a dedicated server.">
+        Automatischer Service der gescannte Dokumente aus einem Dropbox-Ordner per KI analysiert, benennt und kategorisiert. Läuft vollautomatisch als Hintergrundservice auf einem eigenen Server.
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">FastAPI</span><span class="proj-tag">Dropbox API</span><span class="proj-tag">systemd</span><span class="proj-tag ai">Claude API</span>
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+    <!-- Task Manager -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="Personal Task Manager" data-en="Personal Task Manager">Personal Task Manager</div>
+          <div class="proj-cat" data-de="PWA · Self-hosted" data-en="PWA · Self-hosted">PWA · Self-hosted</div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="PWA zur persönlichen Aufgabenverwaltung mit Kategorien, Prioritäten, Fälligkeitsdaten und KI-Integration. Dient als zentrales SSOT für persönliche und berufliche Todos." data-en="PWA for personal task management with categories, priorities, due dates and AI integration. Serves as central single source of truth for personal and professional todos.">
+        PWA zur persönlichen Aufgabenverwaltung mit Kategorien, Prioritäten, Fälligkeitsdaten und KI-Integration. Dient als zentrales SSOT für persönliche und berufliche Todos.
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">PWA</span><span class="proj-tag">JSON SSOT</span><span class="proj-tag">GitHub Pages</span>
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+    <!-- Invoice App -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="Rechnungserstellung & -verwaltung" data-en="Invoice Creation & Management">Rechnungserstellung & -verwaltung</div>
+          <div class="proj-cat" data-de="Zwei getrennte Apps · Self-hosted" data-en="Two separate apps · Self-hosted">Zwei getrennte Apps · Self-hosted</div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="Zwei PWAs: Eine für die automatische Rechnungserstellung aus Word-Vorlagen (mit Variablen-Ersatz, PDF-Ausgabe), eine zweite für die strukturierte Anzeige und Verwaltung aller Rechnungen nach Kunden und Datum." data-en="Two PWAs: one for automatic invoice creation from Word templates (with variable substitution, PDF output), a second for structured display and management of all invoices by customer and date.">
+        Zwei PWAs: Eine für die automatische Rechnungserstellung aus Word-Vorlagen, eine zweite für die strukturierte Anzeige und Verwaltung aller Rechnungen.
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">FastAPI</span><span class="proj-tag">python-docx</span><span class="proj-tag">PWA</span><span class="proj-tag">LibreOffice</span>
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+    <!-- Vokabeltrainer -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="Vokabeltrainer" data-en="Vocabulary Trainer">Vokabeltrainer</div>
+          <div class="proj-cat" data-de="PWA · GitHub Pages" data-en="PWA · GitHub Pages">PWA · GitHub Pages</div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="Lernapp für Vokabeln mit mehreren Quiz-Modi (Lückentext, Multiple Choice, Schreiben), Spaced-Repetition-Logik, Offline-Fähigkeit und Statistiken. Vokabeln werden cloud-basiert synchronisiert." data-en="Learning app for vocabulary with multiple quiz modes (fill-in-the-blank, multiple choice, writing), spaced repetition logic, offline capability and statistics. Vocabulary is synchronised via cloud.">
+        Lernapp für Vokabeln mit mehreren Quiz-Modi, Spaced-Repetition-Logik, Offline-Fähigkeit und Statistiken.
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">PWA</span><span class="proj-tag">Service Worker</span><span class="proj-tag">Dropbox API</span><span class="proj-tag">GitHub Pages</span>
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+    <!-- Weitere Projekte -->
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        </div>
+        <div class="proj-info">
+          <div class="proj-name" data-de="+ weitere 4 Projekte" data-en="+ 4 more projects">+ weitere 4 Projekte</div>
+          <div class="proj-cat" data-de="Echtzeit-Verkehr, Stundensatz-Kalkulator, Projekt-Analytics, Server-Setup" data-en="Real-time traffic, hourly rate calculator, project analytics, server setup">
+            Echtzeit-Verkehr, Stundensatz-Kalkulator, Projekt-Analytics, Server-Setup
+          </div>
+        </div>
+      </div>
+      <div class="proj-desc" data-de="Alle weiteren Projekte auf Anfrage – von einer Echtzeit-Verkehrs-PWA über einen Stundensatz-Kalkulator bis zur zentralen Projekt-Übersichts-App und dem vollständigen Hetzner-Server-Setup mit nginx, systemd und automatischem Deployment." data-en="All further projects on request – from a real-time traffic PWA and hourly rate calculator to a central project overview app and the complete Hetzner server setup with nginx, systemd and automated deployment.">
+        Alle weiteren Projekte auf Anfrage – von einer Echtzeit-Verkehrs-PWA über einen Stundensatz-Kalkulator bis zur zentralen Projekt-Übersichts-App und dem vollständigen Hetzner-Server-Setup.
+      </div>
+      <div class="proj-badge">⚡ Vibe-coded with Claude Code</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── KONTAKT ── -->
+<div class="screen" id="screen-kontakt">
+  <div class="contact-card">
+    <div class="contact-card-title" data-de="Schreiben Sie mir" data-en="Get in touch">Schreiben Sie mir</div>
+    <div class="contact-card-sub" data-de="Ich freue mich über Ihre Nachricht." data-en="I'd love to hear from you.">Ich freue mich über Ihre Nachricht.</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" data-de="Ihr Name" data-en="Your name">Ihr Name</label>
+        <input class="form-input" id="k-name" type="text" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-de="Ihre E-Mail *" data-en="Email *">Ihre E-Mail *</label>
+        <input class="form-input" id="k-email" type="email" autocomplete="email">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-de="Nachricht *" data-en="Message *">Nachricht *</label>
+      <textarea class="form-textarea" id="k-msg" rows="5"></textarea>
+    </div>
+    <button class="btn-send" onclick="sendKontakt()" id="btn-k-send">
+      <span data-de="Nachricht senden" data-en="Send message">Nachricht senden</span>
+    </button>
+    <div class="form-msg" id="k-form-msg"></div>
+  </div>
+
+  <a class="email-btn" href="mailto:josef.jf.fischer@me.com">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+    josef.jf.fischer@me.com
+  </a>
+</div>
+
+</main>
+
+<button class="back-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
+
+<!-- Info Overlay -->
+<div id="info-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div id="info-sheet">
+    <div id="info-sheet-hd">
+      <strong>ℹ️ Info</strong>
+      <button id="btn-info-close" onclick="document.getElementById('info-overlay').classList.remove('show')">Schließen</button>
+    </div>
+    <div id="info-sheet-body">
+      <div class="info-row">
+        <div class="info-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="info-row-text" data-de="<strong>Josef Fischer</strong><br>Bewerbungsunterlagen – vertraulich" data-en="<strong>Josef Fischer</strong><br>Application documents – confidential"><strong>Josef Fischer</strong><br>Bewerbungsunterlagen – vertraulich</div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+        <div class="info-row-text"><a href="mailto:josef.jf.fischer@me.com">josef.jf.fischer@me.com</a></div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <div class="info-row-text" data-de="Diese Seite wurde mit <strong>Claude Code</strong> entwickelt." data-en="This site was built with <strong>Claude Code</strong>.">Diese Seite wurde mit <strong>Claude Code</strong> entwickelt.</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()" data-de="Abmelden" data-en="Log out">Abmelden</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Auth-Check
+// ---------------------------------------------------------------------------
+let firmName = '';
+async function init() {
+  try {
+    const r = await fetch('/api/me');
+    if (!r.ok) { window.location.href = '/'; return; }
+    const d = await r.json();
+    firmName = d.firm_name;
+    document.getElementById('hd-firma').textContent = firmName;
+  } catch { window.location.href = '/'; }
+}
+init();
+
+// ---------------------------------------------------------------------------
+// Lang
+// ---------------------------------------------------------------------------
+let currentLang = localStorage.getItem('lang') || 'de';
+function setLang(l) {
+  currentLang = l;
+  localStorage.setItem('lang', l);
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const v = el.getAttribute('data-' + l);
+    if (v) el.innerHTML = v;
+  });
+  document.getElementById('btn-de').classList.toggle('active', l === 'de');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+}
+setLang(currentLang);
+
+// ---------------------------------------------------------------------------
+// Tabs + Tracking
+// ---------------------------------------------------------------------------
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  // Tracking
+  fetch('/api/track', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ page: name })
+  }).catch(() => {});
+}
+
+// ---------------------------------------------------------------------------
+// Kontakt
+// ---------------------------------------------------------------------------
+async function sendKontakt() {
+  const name     = document.getElementById('k-name').value.trim();
+  const email    = document.getElementById('k-email').value.trim();
+  const nachricht = document.getElementById('k-msg').value.trim();
+  const out      = document.getElementById('k-form-msg');
+  const btn      = document.getElementById('btn-k-send');
+  out.className  = 'form-msg';
+  if (!email || !nachricht) {
+    out.className = 'form-msg err';
+    out.textContent = currentLang === 'de' ? 'Bitte E-Mail und Nachricht ausfüllen.' : 'Please fill in email and message.';
+    return;
+  }
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/kontakt', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, nachricht })
+    });
+    if (r.ok) {
+      out.className = 'form-msg ok';
+      out.textContent = currentLang === 'de' ? 'Vielen Dank! Ich melde mich bald.' : 'Thank you! I will be in touch soon.';
+      document.getElementById('k-name').value = '';
+      document.getElementById('k-email').value = '';
+      document.getElementById('k-msg').value = '';
+    } else throw new Error();
+  } catch {
+    out.className = 'form-msg err';
+    out.textContent = currentLang === 'de' ? 'Fehler. Bitte per E-Mail kontaktieren.' : 'Error. Please contact via email.';
+  } finally { btn.disabled = false; }
+}
+
+// ---------------------------------------------------------------------------
+// Logout
+// ---------------------------------------------------------------------------
+async function doLogout() {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/';
+}
+
+// ---------------------------------------------------------------------------
+// Scroll-to-Top
+// ---------------------------------------------------------------------------
+window.addEventListener('scroll', () => {
+  document.getElementById('back-top').classList.toggle('vis', window.scrollY > 300);
+});
+
+// ---------------------------------------------------------------------------
+// Pull-to-Refresh
+// ---------------------------------------------------------------------------
+const ptrEl = document.getElementById('ptr');
+let ptrStartY = 0, ptrActive = false;
+document.addEventListener('touchstart', e => {
+  if (window.scrollY === 0) { ptrStartY = e.touches[0].clientY; ptrActive = true; }
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  if (!ptrActive) return;
+  if (e.touches[0].clientY - ptrStartY > 50) ptrEl.classList.add('show');
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!ptrActive) return;
+  const dy = e.changedTouches[0].clientY - ptrStartY;
+  if (dy > 80) location.reload();
+  ptrEl.classList.remove('show');
+  ptrActive = false;
+}, { passive: true });
+
+// ---------------------------------------------------------------------------
+// Service Worker
+// ---------------------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
+    reg.update();
+    reg.addEventListener('updatefound', () => {
+      reg.installing?.addEventListener('statechange', function() {
+        if (this.state === 'activated') location.reload();
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>

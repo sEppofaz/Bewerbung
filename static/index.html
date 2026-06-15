@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e3a5f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="JF Bewerbung">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<title>Josef Fischer – Bewerbung</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #1e3a5f;
+  --navy2:  #16304f;
+  --accent: #4a90d9;
+  --bg:     #f5f5f7;
+  --bg2:    #ffffff;
+  --text:   #1a1a1a;
+  --muted:  #6e6e73;
+  --border: #e0e0e5;
+  --green:  #34c759;
+  --red:    #ff3b30;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:    #1c1c1e;
+    --bg2:   #2c2c2e;
+    --text:  #ffffff;
+    --muted: #aeaeb2;
+    --border:#3a3a3c;
+  }
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Lang-Toggle ── */
+.lang-bar {
+  position: fixed; top: calc(12px + env(safe-area-inset-top));
+  right: calc(16px + env(safe-area-inset-right));
+  z-index: 100;
+  display: flex; gap: 4px;
+}
+.lang-btn {
+  background: rgba(255,255,255,.18); border: none; color: #fff;
+  padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: background .15s;
+}
+.lang-btn.active { background: rgba(255,255,255,.38); }
+.lang-btn:active  { opacity: .7; }
+
+/* ── Split ── */
+.split {
+  display: flex;
+  flex: 1;
+  min-height: 100dvh;
+}
+@media (max-width: 768px) {
+  .split { flex-direction: column; min-height: auto; }
+}
+
+/* Linke Seite – Login */
+.side-login {
+  flex: 1;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: calc(80px + env(safe-area-inset-top)) 40px calc(48px + env(safe-area-inset-bottom));
+  min-height: 50dvh;
+}
+@media (max-width: 768px) {
+  .side-login { padding: calc(72px + env(safe-area-inset-top)) 24px 40px; min-height: auto; }
+}
+
+.login-box { width: 100%; max-width: 360px; }
+
+.login-logo {
+  width: 56px; height: 56px;
+  background: rgba(255,255,255,.15);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+}
+
+.login-title {
+  font-size: 26px; font-weight: 700; margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 14px; color: rgba(255,255,255,.65); margin-bottom: 32px; line-height: 1.5;
+}
+
+.login-label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 8px;
+}
+.login-input {
+  width: 100%; padding: 14px 16px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  color: #fff; font-size: 18px; letter-spacing: 2px;
+  font-family: 'SF Mono', 'Fira Mono', monospace;
+  outline: none; margin-bottom: 16px;
+  transition: border-color .2s, background .2s;
+}
+.login-input::placeholder { color: rgba(255,255,255,.3); letter-spacing: 0; font-size: 14px; }
+.login-input:focus { border-color: var(--accent); background: rgba(255,255,255,.18); }
+
+.btn-login {
+  width: 100%; padding: 15px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: opacity .15s; min-height: 50px;
+}
+.btn-login:active { opacity: .8; }
+.btn-login:disabled { opacity: .5; cursor: not-allowed; }
+
+.login-error {
+  margin-top: 12px; padding: 10px 14px;
+  background: rgba(255,59,48,.2); border: 1px solid rgba(255,59,48,.4);
+  border-radius: 10px; font-size: 13px; color: #ffd0ce;
+  display: none;
+}
+.login-error.show { display: block; }
+
+.login-divider {
+  margin: 28px 0 20px;
+  border: none; border-top: 1px solid rgba(255,255,255,.15);
+}
+.login-contact-hint {
+  font-size: 13px; color: rgba(255,255,255,.5); text-align: center; line-height: 1.6;
+}
+.login-contact-hint a {
+  color: rgba(255,255,255,.8); text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* Rechte Seite – VKO */
+.side-vko {
+  flex: 1;
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 40px;
+  min-height: 50dvh;
+  border-left: 1px solid var(--border);
+}
+@media (max-width: 768px) {
+  .side-vko { padding: 32px 24px 40px; min-height: auto; border-left: none; border-top: 1px solid var(--border); }
+}
+
+.vko-box { width: 100%; max-width: 320px; text-align: center; }
+
+.vko-logo-wrap {
+  width: 90px; height: 90px; margin: 0 auto 20px;
+  background: #f0f4f8; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.vko-logo-wrap img { width: 80px; height: 80px; object-fit: contain; }
+.vko-logo-placeholder {
+  font-size: 28px; font-weight: 800; color: var(--navy); letter-spacing: -1px;
+}
+
+.vko-label {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px;
+}
+.vko-title {
+  font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 10px;
+}
+.vko-desc {
+  font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px;
+}
+.vko-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px;
+  background: var(--navy); color: #fff;
+  border-radius: 10px; text-decoration: none;
+  font-size: 14px; font-weight: 600;
+  transition: opacity .15s;
+}
+.vko-link:active { opacity: .8; }
+.vko-link svg { flex-shrink: 0; }
+
+.vko-tagline {
+  margin-top: 20px; font-size: 12px; color: var(--muted); font-style: italic;
+}
+
+/* ── Kontaktformular ── */
+.contact-section {
+  background: var(--bg);
+  padding: 48px calc(40px + env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) calc(40px + env(safe-area-inset-left));
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 768px) {
+  .contact-section { padding: 32px 24px calc(32px + env(safe-area-inset-bottom)); }
+}
+
+.contact-inner { max-width: 600px; margin: 0 auto; }
+.contact-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.contact-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.form-input, .form-textarea {
+  padding: 12px 14px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 15px; color: var(--text);
+  outline: none; font-family: inherit;
+  transition: border-color .2s;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 100px; }
+
+.contact-actions {
+  display: flex; align-items: center; gap: 16px; margin-top: 8px; flex-wrap: wrap;
+}
+.btn-send {
+  padding: 13px 28px;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: opacity .15s; min-height: 48px;
+}
+.btn-send:active { opacity: .8; }
+.btn-send:disabled { opacity: .5; }
+
+.email-link {
+  font-size: 14px; color: var(--accent); text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.email-link:active { opacity: .7; }
+
+.contact-msg {
+  margin-top: 12px; padding: 10px 14px;
+  border-radius: 10px; font-size: 13px; display: none;
+}
+.contact-msg.ok  { display: block; background: #052e16; color: #bbf7d0; }
+.contact-msg.err { display: block; background: #450a0a; color: #fecaca; }
+
+/* ── Footer ── */
+.footer {
+  text-align: center; padding: 16px;
+  font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Back-to-top ── */
+.back-top {
+  position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); right: 16px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  border: none; font-size: 20px; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; transition: opacity .2s;
+}
+.back-top.vis { display: flex; }
+.back-top:active { opacity: .7; }
+</style>
+</head>
+<body>
+
+<!-- Lang-Toggle -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('de')" id="btn-de">DE</button>
+  <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+</div>
+
+<!-- Split -->
+<div class="split">
+
+  <!-- Login -->
+  <div class="side-login">
+    <div class="login-box">
+      <div class="login-logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="14" x="2" y="7" rx="2"/>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+          <line x1="8" y1="13" x2="16" y2="13"/>
+          <line x1="8" y1="17" x2="12" y2="17"/>
+        </svg>
+      </div>
+
+      <div class="login-title" data-de="Willkommen" data-en="Welcome">Willkommen</div>
+      <div class="login-sub" data-de="Bitte geben Sie Ihren persönlichen Zugangscode ein, den Sie mit den Bewerbungsunterlagen erhalten haben." data-en="Please enter your personal access code that you received with the application documents.">
+        Bitte geben Sie Ihren persönlichen Zugangscode ein, den Sie mit den Bewerbungsunterlagen erhalten haben.
+      </div>
+
+      <label class="login-label" data-de="Zugangscode" data-en="Access Code">Zugangscode</label>
+      <input class="login-input" id="token-input" type="text"
+             placeholder="JF-XXXX-YYYY" autocomplete="off" autocorrect="off"
+             autocapitalize="characters" spellcheck="false"
+             onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn-login" onclick="doLogin()" id="btn-login">
+        <span data-de="Einloggen" data-en="Log in">Einloggen</span>
+      </button>
+      <div class="login-error" id="login-error" data-de="Ungültiger Zugangscode. Bitte prüfen Sie Ihre Eingabe." data-en="Invalid access code. Please check your entry.">
+        Ungültiger Zugangscode. Bitte prüfen Sie Ihre Eingabe.
+      </div>
+
+      <hr class="login-divider">
+      <div class="login-contact-hint" data-de='Noch keinen Zugangscode? <a href="#kontakt">Kontakt aufnehmen</a>' data-en='No access code yet? <a href="#kontakt">Get in touch</a>'>
+        Noch keinen Zugangscode? <a href="#kontakt">Kontakt aufnehmen</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- VKO -->
+  <div class="side-vko">
+    <div class="vko-box">
+      <div class="vko-logo-wrap" id="vko-logo-wrap">
+        <!-- Logo hier einfügen: <img src="/assets/vko-logo.png" alt="VKO Logo"> -->
+        <div class="vko-logo-placeholder">VKO</div>
+      </div>
+
+      <div class="vko-label" data-de="Auch interessant" data-en="Also of interest">Auch interessant</div>
+      <div class="vko-title">Vereinskalender.online</div>
+      <div class="vko-desc"
+           data-de="Moderner Veranstaltungskalender für Vereine – entwickelt mit Claude Code als Progressive Web App. Optimiert für mobile Endgeräte, mehrsprachig und barrierefrei."
+           data-en="Modern event calendar for clubs – developed with Claude Code as a Progressive Web App. Optimised for mobile devices, multilingual and accessible.">
+        Moderner Veranstaltungskalender für Vereine – entwickelt mit Claude Code als Progressive Web App. Optimiert für mobile Endgeräte, mehrsprachig und barrierefrei.
+      </div>
+      <a class="vko-link" href="https://vereinskalender.online" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span data-de="Zur Website" data-en="Visit website">Zur Website</span>
+      </a>
+      <div class="vko-tagline" data-de="Vibe-coded with Claude Code" data-en="Vibe-coded with Claude Code">
+        Vibe-coded with Claude Code
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Kontaktformular -->
+<div class="contact-section" id="kontakt">
+  <div class="contact-inner">
+    <div class="contact-title" data-de="Kontakt aufnehmen" data-en="Get in touch">Kontakt aufnehmen</div>
+    <div class="contact-sub"
+         data-de="Schreiben Sie mir eine Nachricht oder öffnen Sie Ihr E-Mail-Programm direkt."
+         data-en="Send me a message or open your email client directly.">
+      Schreiben Sie mir eine Nachricht oder öffnen Sie Ihr E-Mail-Programm direkt.
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" data-de="Ihr Name" data-en="Your name">Ihr Name</label>
+        <input class="form-input" id="c-name" type="text" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-de="Ihre E-Mail *" data-en="Your email *">Ihre E-Mail *</label>
+        <input class="form-input" id="c-email" type="email" autocomplete="email" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" data-de="Ihre Nachricht *" data-en="Your message *">Ihre Nachricht *</label>
+      <textarea class="form-textarea" id="c-msg" rows="4"></textarea>
+    </div>
+
+    <div class="contact-actions">
+      <button class="btn-send" onclick="sendKontakt()" id="btn-send">
+        <span data-de="Nachricht senden" data-en="Send message">Nachricht senden</span>
+      </button>
+      <a class="email-link" href="mailto:josef.jf.fischer@me.com">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="16" x="2" y="4" rx="2"/>
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        josef.jf.fischer@me.com
+      </a>
+    </div>
+    <div class="contact-msg" id="c-msg-out"></div>
+  </div>
+</div>
+
+<div class="footer">
+  &copy; 2026 Josef Fischer &nbsp;·&nbsp;
+  <span data-de="Alle Inhalte vertraulich" data-en="All content confidential">Alle Inhalte vertraulich</span>
+</div>
+
+<button class="back-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
+
+<script>
+// ---------------------------------------------------------------------------
+// Lang
+// ---------------------------------------------------------------------------
+let currentLang = localStorage.getItem('lang') || 'de';
+
+function setLang(l) {
+  currentLang = l;
+  localStorage.setItem('lang', l);
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-de]').forEach(el => {
+    el.innerHTML = el.getAttribute('data-' + l) || el.innerHTML;
+  });
+  document.getElementById('btn-de').classList.toggle('active', l === 'de');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+}
+
+setLang(currentLang);
+
+// ---------------------------------------------------------------------------
+// Login
+// ---------------------------------------------------------------------------
+async function doLogin() {
+  const token = document.getElementById('token-input').value.trim();
+  const err   = document.getElementById('login-error');
+  const btn   = document.getElementById('btn-login');
+  if (!token) return;
+  btn.disabled = true;
+  err.classList.remove('show');
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ token })
+    });
+    if (r.ok) {
+      window.location.href = '/app/';
+    } else {
+      err.classList.add('show');
+    }
+  } catch {
+    err.classList.add('show');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Token-Eingabe auto-uppercase + formatieren
+document.getElementById('token-input').addEventListener('input', function() {
+  let v = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  this.value = v;
+});
+
+// ---------------------------------------------------------------------------
+// Kontakt
+// ---------------------------------------------------------------------------
+async function sendKontakt() {
+  const name     = document.getElementById('c-name').value.trim();
+  const email    = document.getElementById('c-email').value.trim();
+  const nachricht = document.getElementById('c-msg').value.trim();
+  const out      = document.getElementById('c-msg-out');
+  const btn      = document.getElementById('btn-send');
+
+  out.className = 'contact-msg';
+
+  if (!email || !nachricht) {
+    out.className = 'contact-msg err';
+    out.textContent = currentLang === 'de'
+      ? 'Bitte E-Mail und Nachricht ausfüllen.'
+      : 'Please fill in email and message.';
+    return;
+  }
+
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/kontakt', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name, email, nachricht })
+    });
+    if (r.ok) {
+      out.className = 'contact-msg ok';
+      out.textContent = currentLang === 'de'
+        ? 'Vielen Dank! Ich melde mich bald.'
+        : 'Thank you! I will get back to you soon.';
+      document.getElementById('c-name').value = '';
+      document.getElementById('c-email').value = '';
+      document.getElementById('c-msg').value = '';
+    } else {
+      throw new Error();
+    }
+  } catch {
+    out.className = 'contact-msg err';
+    out.textContent = currentLang === 'de'
+      ? 'Fehler beim Senden. Bitte per E-Mail kontaktieren.'
+      : 'Error sending. Please contact via email.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scroll-to-Top
+// ---------------------------------------------------------------------------
+window.addEventListener('scroll', () => {
+  document.getElementById('back-top').classList.toggle('vis', window.scrollY > 300);
+});
+
+// ---------------------------------------------------------------------------
+// Service Worker
+// ---------------------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
+    reg.update();
+    reg.addEventListener('updatefound', () => {
+      reg.installing?.addEventListener('statechange', function() {
+        if (this.state === 'activated') location.reload();
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>

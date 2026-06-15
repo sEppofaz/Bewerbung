@@ -1,0 +1,15 @@
+[Unit]
+Description=Bewerbung Josef Fischer
+After=network.target
+
+[Service]
+User=webhook
+WorkingDirectory=/opt/bewerbung
+EnvironmentFile=/etc/pka/secrets.env
+Environment=HTTPS_ONLY=true
+ExecStart=/opt/bewerbung/venv/bin/uvicorn main:app --host 127.0.0.1 --port 5004
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

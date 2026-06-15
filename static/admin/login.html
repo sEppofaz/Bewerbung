@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f">
+<title>Admin – Josef Fischer Bewerbung</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --navy: #1e3a5f; --accent: #4a90d9; --bg: #f5f5f7; --bg2: #fff; --text: #1a1a1a; --muted: #6e6e73; --border: #e0e0e5; --red: #ff3b30; }
+@media (prefers-color-scheme: dark) { :root { --bg: #1c1c1e; --bg2: #2c2c2e; --text: #fff; --muted: #aeaeb2; --border: #3a3a3c; } }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--navy); min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.box { background: var(--bg2); border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 360px; box-shadow: 0 8px 40px rgba(0,0,0,.3); }
+.box-icon { width: 52px; height: 52px; background: var(--navy); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.box-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.box-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+.inp { width: 100%; padding: 13px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--text); outline: none; font-family: monospace; letter-spacing: 1px; margin-bottom: 14px; transition: border-color .2s; }
+.inp:focus { border-color: var(--accent); }
+.btn { width: 100%; padding: 14px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 48px; }
+.btn:active { opacity: .8; }
+.btn:disabled { opacity: .5; }
+.err { margin-top: 12px; padding: 10px 14px; background: #450a0a; color: #fecaca; border-radius: 10px; font-size: 13px; display: none; }
+.err.show { display: block; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="box-icon">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  </div>
+  <div class="box-title">Admin-Bereich</div>
+  <div class="box-sub">Bewerbungsseite Josef Fischer</div>
+  <input class="inp" id="tok" type="password" placeholder="Admin-Token eingeben" onkeydown="if(event.key==='Enter')doLogin()">
+  <button class="btn" onclick="doLogin()" id="btn">Einloggen</button>
+  <div class="err" id="err">Falscher Token. Bitte erneut versuchen.</div>
+</div>
+<script>
+async function doLogin() {
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('err');
+  const tok = document.getElementById('tok').value.trim();
+  if (!tok) return;
+  btn.disabled = true;
+  err.classList.remove('show');
+  try {
+    const r = await fetch('/api/admin/login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ token: tok })
+    });
+    if (r.ok) { window.location.href = '/admin/'; }
+    else { err.classList.add('show'); }
+  } catch { err.classList.add('show'); }
+  finally { btn.disabled = false; }
+}
+</script>
+</body>
+</html>
