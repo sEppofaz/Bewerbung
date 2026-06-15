@@ -178,6 +178,13 @@ def admin_page(request: Request):
 def admin_login_page():
     return FileResponse(STATIC_DIR / "admin" / "login.html", headers={"Cache-Control": "no-store"})
 
+@app.get("/assets/vko-logo.svg")
+def vko_logo():
+    path = ASSETS_DIR / "vko-logo.svg"
+    if not path.exists():
+        raise HTTPException(404)
+    return FileResponse(path, media_type="image/svg+xml")
+
 @app.get("/assets/lebenslauf.pdf")
 def lebenslauf_pdf(request: Request):
     require_firm(request)
