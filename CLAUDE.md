@@ -25,18 +25,22 @@ ssh root@89.167.104.145 "git -C /opt/bewerbung pull && systemctl restart bewerbu
 
 ```
 main.py              ← FastAPI Backend (alle Routen)
-requirements.txt
+requirements.txt     ← weasyprint, jinja2, cairosvg, ...
+templates/
+  cv_print.html      ← Jinja2-Template für CV-PDF (WeasyPrint)
 static/
   index.html         ← Landing (Split: Login | VKO)
   app/
-    index.html       ← Firmen-Bereich (Auth-geschützt)
+    index.html       ← Firmen-Bereich (Auth-geschützt, CV dynamisch)
   admin/
-    index.html       ← Admin-PWA
+    index.html       ← Admin-PWA (6 Tabs: +Lebenslauf)
     login.html       ← Admin-Login
   manifest.json
   sw.js              ← Cache: bewerbung-v1
 assets/
-  lebenslauf.pdf     ← Von Josef hinzufügen (in .gitignore!)
+  lebenslauf.pdf     ← Original EN-PDF (Fallback, in .gitignore!)
+  lebenslauf_de.pdf  ← Generiert via Admin (in .gitignore!)
+  lebenslauf_en.pdf  ← Generiert via Admin (in .gitignore!)
 icons/               ← Auto-generiert via cairosvg (in .gitignore!)
 bewerbung.db         ← SQLite (in .gitignore!)
 ```
@@ -50,6 +54,7 @@ bewerbung.db         ← SQLite (in .gitignore!)
 | `TELEGRAM_BOT_TOKEN`    | Schon vorhanden                     |
 | `TELEGRAM_CHAT_ID`      | Schon vorhanden                     |
 | `HTTPS_ONLY`            | `true` auf Server, `false` lokal    |
+| `CLAUDE_API_KEY`        | Für Auto-Übersetzung DE→EN (Haiku)  |
 
 ## Server-Setup (einmalig)
 
@@ -150,6 +155,10 @@ server {
 - `HTTPS_ONLY=true` im systemd → lokal testen mit `HTTPS_ONLY=false` in shell
 - Icon-Berechtigungen: `chown webhook:webhook /opt/bewerbung/icons` nach erstem Deployment
 - SSL-Zertifikat via certbot (Let's Encrypt), Ablauf 2026-09-13, Auto-Renewal aktiv
+- Python 3.12: Deutsche Anführungszeichen „" im Python-Code verboten → SyntaxError! Immer ' oder " (ASCII) verwenden
+- CV-Daten in SQLite `content`-Tabelle (Key `main`, JSON). Lebenslauf wird dynamisch geladen, nicht hardcoded
+- PDF-Workflow: Admin → Lebenslauf bearbeiten (DE) → „Übersetzen + PDFs generieren" → Claude Haiku übersetzt → WeasyPrint baut PDFs
+- `lebenslauf_de.pdf`, `lebenslauf_en.pdf`, `lebenslauf.pdf` alle in `.gitignore` → manuell auf Server
 
 ## Token-Format
 
