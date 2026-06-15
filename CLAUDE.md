@@ -2,7 +2,7 @@
 
 ## URLs & Deployment
 
-- **Live:** `https://fischer-josef.de/` (Domain noch zu registrieren)
+- **Live:** `https://fischer-josef.de/`
 - **Admin:** `https://fischer-josef.de/admin/`
 - **Lokal:** `~/Dropbox/Apps/Claude/Bewerbung/`
 - **GitHub:** `sEppofaz/Bewerbung` (privat)
@@ -149,7 +149,7 @@ server {
 - `icons/` und `bewerbung.db` sind in `.gitignore` → werden auf Server auto-erstellt
 - `HTTPS_ONLY=true` im systemd → lokal testen mit `HTTPS_ONLY=false` in shell
 - Icon-Berechtigungen: `chown webhook:webhook /opt/bewerbung/icons` nach erstem Deployment
-- Domain `fischer-josef.de` noch zu registrieren → dann certbot für SSL
+- SSL-Zertifikat via certbot (Let's Encrypt), Ablauf 2026-09-13, Auto-Renewal aktiv
 
 ## Token-Format
 

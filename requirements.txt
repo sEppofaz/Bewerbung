@@ -5,3 +5,5 @@ itsdangerous
 requests
 cairosvg
 python-multipart
+weasyprint
+jinja2

@@ -6,17 +6,21 @@ import os, sqlite3, secrets, string, json as json_lib
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from jinja2 import Environment, FileSystemLoader
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, FileResponse, RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 import requests as http
 
-BASE       = Path(__file__).parent
-DB_PATH    = BASE / "bewerbung.db"
-ICONS_DIR  = BASE / "icons"
-STATIC_DIR = BASE / "static"
-ASSETS_DIR = BASE / "assets"
+BASE          = Path(__file__).parent
+DB_PATH       = BASE / "bewerbung.db"
+ICONS_DIR     = BASE / "icons"
+STATIC_DIR    = BASE / "static"
+ASSETS_DIR    = BASE / "assets"
+TEMPLATES_DIR = BASE / "templates"
+
+_jinja = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=False)
 
 ADMIN_TOKEN = os.environ.get("BEWERBUNG_ADMIN_TOKEN", "")
 TG_BOT      = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -106,8 +110,129 @@ _DEFAULT_CONTENT = {
          "en": "Full-time or hybrid – open to different models"},
         {"de": "Raum München / Bayern oder remote-freundlich",
          "en": "Munich / Bavaria area or remote-friendly"}
-    ]
+    ],
+    "cv": {
+        "person": {
+            "name": "Josef Fischer",
+            "titel_de": "Dipl.-Wirtschaftsingenieur · Strategic Delivery Partner",
+            "titel_en": "Graduate Engineer · Strategic Delivery Partner",
+            "info_de": "geb. 24.06.1973 · verheiratet · 2 Kinder",
+            "info_en": "born 24.06.1973 · married · 2 children",
+            "email": "josef.jf.fischer@me.com",
+            "wohnort": "Bayerbach"
+        },
+        "berufserfahrung": [
+            {
+                "firma_de": "QuEST Global Engineering Services GmbH, München",
+                "firma_en": "QuEST Global Engineering Services GmbH, Munich",
+                "zeitraum": "seit 11/2018",
+                "rolle_de": "Prokurist | Centre Manager | Strategic Delivery Partner",
+                "rolle_en": "Proxy (Prokurist) | Centre Manager | Strategic Delivery Partner",
+                "punkte": [
+                    {"de": "seit 04/2024: Strategic Delivery Partner BMW VAU – bis zu 320 Mitarbeiter, 28 Mio. $ Umsatz", "en": "Since 04/2024: Strategic Delivery Partner BMW VAU – up to 320 employees, USD 28M revenue"},
+                    {"de": "01/2022 – 03/2024: Head of Delivery Germany – regional verantwortlich für Delivery Excellence und Business Development", "en": "01/2022 – 03/2024: Head of Delivery Germany – regional responsibility for delivery excellence and business development"},
+                    {"de": "11/2019 – 12/2021: Program Manager für Delivery Units „Project Management" und „Electrics, Electronics & Software Services"", "en": "11/2019 – 12/2021: Program Manager for Delivery Units 'Project Management' and 'Electrics, Electronics & Software Services'"},
+                    {"de": "11/2018 – 12/2021: Program Manager Delivery Unit „Project Management" – Projektimplementierung, -durchführung und Aufbau neuer Projekte", "en": "11/2018 – 12/2021: Program Manager Delivery Unit 'Project Management' – project implementation, execution and new project setup"}
+                ]
+            },
+            {
+                "firma_de": "DETECH Fahrzeugentwicklung GmbH & Co KG, München",
+                "firma_en": "DETECH Fahrzeugentwicklung GmbH & Co KG, Munich",
+                "zeitraum": "11/2009 – 10/2018",
+                "rolle_de": "Gesellschafter · Vertriebspartner · Leiter Projektmanagement",
+                "rolle_en": "Shareholder · Sales Partner · Head of Project Management",
+                "punkte": [
+                    {"de": "12/2013 – 10/2018: Gesellschafter, Vertriebspartner und Leiter Projektmanagement", "en": "12/2013 – 10/2018: Shareholder, sales partner and head of project management"},
+                    {"de": "12/2011 – 11/2013: Vertrieb und Leiter Projektmanagement (80+ Mitarbeiter in Work Package und Body Lease)", "en": "12/2011 – 11/2013: Sales and head of project management (80+ employees in work package and body lease)"},
+                    {"de": "11/2009 – 11/2011: Projektingenieur bei BMW AG – Änderungsmanagement im Kundenprozesszentrum (25 Monate)", "en": "11/2009 – 11/2011: Project field engineer at BMW AG – change management in the customer process centre (25 months)"}
+                ]
+            },
+            {
+                "firma_de": "ACTANO GmbH, München",
+                "firma_en": "ACTANO GmbH, Munich",
+                "zeitraum": "01/2005 – 10/2009",
+                "rolle_de": "Projektmanagement-Berater · Prozessberater",
+                "rolle_en": "Project Management Consultant · Process Consultant",
+                "punkte": [
+                    {"de": "11/2007 – 10/2009: PM-Berater für BMW AG – Änderungsmanagement und Projektmanagement-Support Antriebssysteme", "en": "11/2007 – 10/2009: PM consultant at BMW AG – change management and project management support, drive systems"},
+                    {"de": "01/2005 – 11/2007: Prozessberater für BMW AG – CMMI-Implementierung, Software-Logistik, Projekt SWLdZ (2 Jahre)", "en": "01/2005 – 11/2007: Process consultant at BMW AG – CMMI implementation, software logistics, project SWLdZ (2 years)"}
+                ]
+            },
+            {
+                "firma_de": "Josef Fischer, Ingenieurbüro, Bayerbach",
+                "firma_en": "Josef Fischer, Engineering Office, Bayerbach",
+                "zeitraum": "10/2004 – 01/2005",
+                "rolle_de": "Selbstständiger Ingenieurdienstleister",
+                "rolle_en": "Self-employed engineering service provider",
+                "punkte": [
+                    {"de": "Otto Spanner GmbH: Prozessberater für Aufbau einer Produktionslinie (Cabrio-Verdeck)", "en": "Otto Spanner GmbH: process consultant for construction of a convertible folding top production line"},
+                    {"de": "DaimlerChrysler via Ingenics AG: Prozessberater – lebenszyklusorientierte Produktion (eigene Methode)", "en": "DaimlerChrysler via Ingenics AG: process consultant – life cycle-oriented production (own method)"}
+                ]
+            }
+        ],
+        "ausbildung": [
+            {
+                "titel_de": "Dipl.-Wirtschaftsingenieur (Univ.) – Schwerpunkt Produktion & Prozesse",
+                "titel_en": "Dipl.-Wirtschaftsingenieur (graduate engineer) – focus on Production & Processes",
+                "zeitraum": "10/1998 – 12/2004",
+                "institution": "Technische Universität Clausthal, Clausthal-Zellerfeld",
+                "punkte": [
+                    {"de": "Diplomarbeit bei DaimlerChrysler, Rastatt: Fabrikmodell zur monetären Bewertung lebenszyklusorientierter Produktion", "en": "Diploma thesis at DaimlerChrysler, Rastatt: factory model for monetary evaluation of life cycle-oriented production"},
+                    {"de": "Praktika: Dr. Ing. h.c. F. Porsche AG Stuttgart (2001) & Porsche / Harley-Davidson Kansas City (2001/02)", "en": "Internships: Dr. Ing. h.c. F. Porsche AG Stuttgart (2001) & Porsche / Harley-Davidson Kansas City (2001/02)"}
+                ]
+            },
+            {
+                "titel_de": "Allgemeine Hochschulreife (technischer Zweig)",
+                "titel_en": "General university entrance qualification (technical branch)",
+                "zeitraum": "09/1996 – 07/1998",
+                "institution": "Staatliche Berufsoberschule (BOS), Landshut",
+                "punkte": []
+            },
+            {
+                "titel_de": "Ausbildung zum Landwirt · Staatl. gepr. Agronom",
+                "titel_en": "Training as a Farmer · State-examined Economist for Agriculture",
+                "zeitraum": "09/1989 – 07/1992",
+                "institution": "Landshut · seit 10/1994: Bewirtschaftung eigener Land- und Forstwirtschaft",
+                "punkte": []
+            }
+        ],
+        "skills_cv": [
+            {"de": "Programmmanagement", "en": "Programme Management", "highlight": True},
+            {"de": "Business Development", "en": "Business Development", "highlight": True},
+            {"de": "AI-assisted Development", "en": "AI-assisted Development", "highlight": True},
+            {"de": "Change Management", "en": "Change Management", "highlight": False},
+            {"de": "Prozessberatung", "en": "Process Consulting", "highlight": False},
+            {"de": "Engineering Services", "en": "Engineering Services", "highlight": False},
+            {"de": "Führung (bis 320 MA)", "en": "Leadership (up to 320 staff)", "highlight": False},
+            {"de": "Progressive Web Apps", "en": "Progressive Web Apps", "highlight": False},
+            {"de": "FastAPI · Python", "en": "FastAPI · Python", "highlight": False},
+            {"de": "HTML · CSS · JavaScript", "en": "HTML · CSS · JavaScript", "highlight": False},
+            {"de": "Linux · nginx · Server", "en": "Linux · nginx · Server", "highlight": False},
+            {"de": "Prozessautomatisierung", "en": "Process Automation", "highlight": False},
+            {"de": "SQLite · Git · GitHub", "en": "SQLite · Git · GitHub", "highlight": False}
+        ],
+        "engagement": [
+            {"de": "2021, 2022: Teilnehmer QuEST „Odyssey" – Top Level Leadership Program", "en": "2021, 2022: Participant in QuEST 'Odyssey' – Top Level Leadership Program"},
+            {"de": "SS 2002: Initiator der Gründung einer Studentenberatung in Clausthal-Zellerfeld", "en": "SS 2002: Initiator of founding a student consultancy in Clausthal-Zellerfeld"},
+            {"de": "05/2000 – 06/2001: 1. Vorsitzender der VWI-Hochschulgruppe Clausthal e.V.", "en": "05/2000 – 06/2001: 1st Chairman of the VWI-Hochschulgruppe Clausthal e.V."},
+            {"de": "Mitglied der Freiwilligen Feuerwehr und eines Trachtenvereins", "en": "Member of the local volunteer fire brigade and a traditional Bavarian club"}
+        ],
+        "interessen_de": "Familie · Wandern & Laufen · Vibe-Coding · Forstwirtschaft · Feuerwehr · Skifahren · Radfahren · Schwimmen · Lesen",
+        "interessen_en": "Family · walking & running · Vibe-Coding · forestry · fire brigade · skiing · cycling · swimming · reading"
+    }
 }
+
+def _merge_cv(existing: dict, updated: dict) -> dict:
+    """DE-Felder aus updated übernehmen, EN-Felder aus existing behalten."""
+    result = json_lib.loads(json_lib.dumps(existing))  # deep copy
+    result["person"].update({k: v for k, v in updated.get("person", {}).items()})
+    for key in ("interessen_de",):
+        if key in updated:
+            result[key] = updated[key]
+    for section in ("berufserfahrung", "ausbildung", "skills_cv", "engagement"):
+        if section in updated:
+            result[section] = updated[section]
+    return result
 
 def _get_content() -> dict:
     with db() as con:
@@ -229,11 +354,14 @@ def vko_logo():
 @app.get("/assets/lebenslauf.pdf")
 def lebenslauf_pdf(request: Request):
     require_firm(request)
+    # Weiterleitung auf generierte DE-Version, Fallback auf originale Datei
+    de_path = ASSETS_DIR / "lebenslauf_de.pdf"
+    if de_path.exists():
+        return FileResponse(de_path, media_type="application/pdf", filename="Lebenslauf_Josef_Fischer_DE.pdf")
     path = ASSETS_DIR / "lebenslauf.pdf"
     if not path.exists():
         raise HTTPException(404, "PDF nicht gefunden")
-    return FileResponse(path, media_type="application/pdf",
-                        filename="Lebenslauf_Josef_Fischer.pdf")
+    return FileResponse(path, media_type="application/pdf", filename="Lebenslauf_Josef_Fischer.pdf")
 
 # ---------------------------------------------------------------------------
 # API – Firmen-Auth
@@ -402,12 +530,48 @@ async def put_content(request: Request):
     body = await request.json()
     if not all(k in body for k in ("ueber_mich", "skills", "suche")):
         raise HTTPException(400, "Fehlende Felder")
+    # cv-Key: vorhandene EN-Felder aus bisherigem Stand übernehmen
+    existing = _get_content()
+    if "cv" not in body:
+        body["cv"] = existing.get("cv", _DEFAULT_CONTENT["cv"])
+    else:
+        body["cv"] = _merge_cv(existing.get("cv", _DEFAULT_CONTENT["cv"]), body["cv"])
     with db() as con:
         con.execute(
             "INSERT OR REPLACE INTO content (key, value) VALUES ('main', ?)",
             (json_lib.dumps(body, ensure_ascii=False),)
         )
     return {"ok": True}
+
+@app.post("/api/admin/generate-cv-pdfs")
+async def generate_cv_pdfs(request: Request):
+    require_admin(request)
+    from weasyprint import HTML as WP_HTML
+    content = _get_content()
+    cv = content.get("cv", _DEFAULT_CONTENT["cv"])
+    tmpl = _jinja.get_template("cv_print.html")
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+    for lang in ("de", "en"):
+        html = tmpl.render(cv=cv, lang=lang)
+        pdf = WP_HTML(string=html, base_url=str(BASE)).write_pdf()
+        (ASSETS_DIR / f"lebenslauf_{lang}.pdf").write_bytes(pdf)
+    return {"ok": True, "files": ["lebenslauf_de.pdf", "lebenslauf_en.pdf"]}
+
+@app.get("/assets/lebenslauf_de.pdf")
+def lebenslauf_de_pdf(request: Request):
+    require_firm(request)
+    path = ASSETS_DIR / "lebenslauf_de.pdf"
+    if not path.exists():
+        raise HTTPException(404, "PDF noch nicht generiert – Admin: Lebenslauf-PDFs generieren")
+    return FileResponse(path, media_type="application/pdf", filename="Lebenslauf_Josef_Fischer_DE.pdf")
+
+@app.get("/assets/lebenslauf_en.pdf")
+def lebenslauf_en_pdf(request: Request):
+    require_firm(request)
+    path = ASSETS_DIR / "lebenslauf_en.pdf"
+    if not path.exists():
+        raise HTTPException(404, "PDF noch nicht generiert – Admin: Lebenslauf-PDFs generieren")
+    return FileResponse(path, media_type="application/pdf", filename="CV_Josef_Fischer_EN.pdf")
 
 @app.get("/api/admin/kontakt")
 def admin_kontakt_list(request: Request):

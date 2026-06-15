@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<style>
+@page { size: A4; margin: 18mm 18mm 18mm 18mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color: #1c1917; line-height: 1.4; }
+
+.header { background: #1e3a5f; color: white; padding: 22px 24px; border-radius: 8px; margin-bottom: 14px; }
+.h-name  { font-size: 21pt; font-weight: 800; margin-bottom: 3px; }
+.h-title { font-size: 10.5pt; opacity: .8; margin-bottom: 12px; }
+.h-contacts { display: flex; gap: 22px; flex-wrap: wrap; }
+.h-contact  { font-size: 9pt; opacity: .85; }
+
+.section    { margin-bottom: 13px; }
+.sec-title  { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+              color: #1e3a5f; border-bottom: 1.5px solid #1e3a5f; padding-bottom: 3px; margin-bottom: 9px; }
+
+.entry        { margin-bottom: 10px; }
+.entry:last-child { margin-bottom: 0; }
+.entry-head   { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.entry-firma  { font-size: 10pt; font-weight: 700; }
+.entry-date   { font-size: 8.5pt; color: #666; white-space: nowrap; flex-shrink: 0; }
+.entry-rolle  { font-size: 9.5pt; color: #1e3a5f; font-weight: 600; margin: 2px 0 5px; }
+.entry-inst   { font-size: 9pt; color: #666; margin: 2px 0 5px; }
+.entry-points { margin: 0; padding-left: 13px; }
+.entry-points li { font-size: 9pt; color: #44403c; margin-bottom: 2px; }
+
+.divider { border: none; border-top: 1px solid #e5e0db; margin: 9px 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip    { background: #f0f4f8; border-radius: 10px; padding: 3px 9px; font-size: 8.5pt; }
+.chip.hl { background: #1e3a5f; color: white; }
+
+.list-plain  { padding-left: 13px; }
+.list-plain li { font-size: 9pt; color: #44403c; margin-bottom: 2px; }
+.interessen  { font-size: 9.5pt; color: #44403c; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="h-name">{{ cv.person.name }}</div>
+  <div class="h-title">{{ cv.person.titel_de if lang == 'de' else cv.person.titel_en }}</div>
+  <div class="h-contacts">
+    <span class="h-contact">✉ {{ cv.person.email }}</span>
+    {% if cv.person.wohnort %}<span class="h-contact">⌂ {{ cv.person.wohnort }}</span>{% endif %}
+    <span class="h-contact">{{ cv.person.info_de if lang == 'de' else cv.person.info_en }}</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">{{ 'Berufserfahrung' if lang == 'de' else 'Work Experience' }}</div>
+  {% for job in cv.berufserfahrung %}
+  <div class="entry">
+    <div class="entry-head">
+      <div class="entry-firma">{{ job.firma_de if lang == 'de' else (job.firma_en or job.firma_de) }}</div>
+      <div class="entry-date">{{ job.zeitraum }}</div>
+    </div>
+    <div class="entry-rolle">{{ job.rolle_de if lang == 'de' else (job.rolle_en or job.rolle_de) }}</div>
+    {% if job.punkte %}
+    <ul class="entry-points">
+      {% for p in job.punkte %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% if not loop.last %}<hr class="divider">{% endif %}
+  {% endfor %}
+</div>
+
+<div class="section">
+  <div class="sec-title">{{ 'Studium & Ausbildung' if lang == 'de' else 'Education & Training' }}</div>
+  {% for edu in cv.ausbildung %}
+  <div class="entry">
+    <div class="entry-head">
+      <div class="entry-firma">{{ edu.titel_de if lang == 'de' else (edu.titel_en or edu.titel_de) }}</div>
+      <div class="entry-date">{{ edu.zeitraum }}</div>
+    </div>
+    {% if edu.institution %}<div class="entry-inst">{{ edu.institution }}</div>{% endif %}
+    {% if edu.punkte %}
+    <ul class="entry-points">
+      {% for p in edu.punkte %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% if not loop.last %}<hr class="divider">{% endif %}
+  {% endfor %}
+</div>
+
+<div class="section">
+  <div class="sec-title">{{ 'Kenntnisse & Skills' if lang == 'de' else 'Skills' }}</div>
+  <div class="chips">
+    {% for s in cv.skills_cv %}
+    <span class="chip{% if s.highlight %} hl{% endif %}">{{ s.de if lang == 'de' else (s.en or s.de) }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Engagement</div>
+  <ul class="list-plain">
+    {% for e in cv.engagement %}<li>{{ e.de if lang == 'de' else (e.en or e.de) }}</li>{% endfor %}
+  </ul>
+</div>
+
+<div class="section">
+  <div class="sec-title">{{ 'Interessen' if lang == 'de' else 'Interests' }}</div>
+  <p class="interessen">{{ cv.interessen_de if lang == 'de' else (cv.interessen_en or cv.interessen_de) }}</p>
+</div>
+
+</body>
+</html>
