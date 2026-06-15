@@ -2,7 +2,7 @@
 Bewerbungsseite Josef Fischer – Backend
 FastAPI + SQLite + Telegram | Port 5004
 """
-import os, sqlite3, secrets, string
+import os, sqlite3, secrets, string, json as json_lib
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -60,6 +60,10 @@ def init_db():
                 ip         TEXT,
                 FOREIGN KEY(token_id) REFERENCES tokens(id)
             );
+            CREATE TABLE IF NOT EXISTS content (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS kontakt_anfragen (
                 id        INTEGER PRIMARY KEY AUTOINCREMENT,
                 name      TEXT,
@@ -75,6 +79,43 @@ init_db()
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+_DEFAULT_CONTENT = {
+    "ueber_mich": {
+        "de": "Dipl.-Wirtschaftsingenieur mit über 20 Jahren Erfahrung im Engineering-Dienstleistungsbereich und Projektmanagement. Zuletzt als Prokurist und Centre Manager bei QuEST Global in München verantwortlich für bis zu 320 Mitarbeiter und 28 Mio. $ Umsatz. Neben meiner Führungsrolle entwickle ich eigenständig Webanwendungen und Automatisierungslösungen – mit KI-Unterstützung durch Claude Code (Vibe-Coding). Ich kombiniere strategisches Denken mit technischer Umsetzungsstärke und einem ausgeprägten Sinn für effiziente Prozesse.",
+        "en": "Graduate engineer (Dipl.-Wirtschaftsingenieur) with 20+ years in engineering services and project management. Most recently Prokurist (proxy) and Centre Manager at QuEST Global Munich, responsible for up to 320 employees and USD 28M revenue. Alongside my leadership role I independently develop web applications and automation solutions using AI-assisted development (Vibe-Coding with Claude Code). I combine strategic thinking with strong hands-on execution and a keen sense for efficient processes."
+    },
+    "skills": [
+        {"de": "AI-assisted Development", "en": "AI-assisted Development", "highlight": True},
+        {"de": "Programmmanagement", "en": "Programme Management", "highlight": True},
+        {"de": "Business Development", "en": "Business Development", "highlight": True},
+        {"de": "Change Management", "en": "Change Management", "highlight": False},
+        {"de": "Prozessberatung", "en": "Process Consulting", "highlight": False},
+        {"de": "Engineering Services", "en": "Engineering Services", "highlight": False},
+        {"de": "Führung (bis 320 MA)", "en": "Leadership (up to 320 staff)", "highlight": False},
+        {"de": "Progressive Web Apps", "en": "Progressive Web Apps", "highlight": False},
+        {"de": "FastAPI · Python", "en": "FastAPI · Python", "highlight": False},
+        {"de": "HTML · CSS · JavaScript", "en": "HTML · CSS · JavaScript", "highlight": False},
+        {"de": "Linux · nginx · Server", "en": "Linux · nginx · Server", "highlight": False},
+        {"de": "Prozessautomatisierung", "en": "Process Automation", "highlight": False},
+        {"de": "Git / GitHub", "en": "Git / GitHub", "highlight": False}
+    ],
+    "suche": [
+        {"de": "Führungsrolle mit digitalem Anteil – Engineering Services, Digitalisierung, Tech oder Prozessautomatisierung",
+         "en": "Leadership role with a digital component – engineering services, digitisation, tech or process automation"},
+        {"de": "Vollzeit oder Hybrid – offen für verschiedene Modelle",
+         "en": "Full-time or hybrid – open to different models"},
+        {"de": "Raum München / Bayern oder remote-freundlich",
+         "en": "Munich / Bavaria area or remote-friendly"}
+    ]
+}
+
+def _get_content() -> dict:
+    with db() as con:
+        row = con.execute("SELECT value FROM content WHERE key='main'").fetchone()
+    if row:
+        return json_lib.loads(row["value"])
+    return _DEFAULT_CONTENT
+
 def gen_token_str() -> str:
     chars = string.ascii_uppercase + string.digits
     while True:
@@ -350,6 +391,23 @@ def admin_events(request: Request, firma_id: Optional[int] = None, limit: int = 
                 ORDER BY e.ts DESC LIMIT ?
             """, (limit,)).fetchall()
     return [dict(r) for r in rows]
+
+@app.get("/api/content")
+def get_content():
+    return _get_content()
+
+@app.put("/api/admin/content")
+async def put_content(request: Request):
+    require_admin(request)
+    body = await request.json()
+    if not all(k in body for k in ("ueber_mich", "skills", "suche")):
+        raise HTTPException(400, "Fehlende Felder")
+    with db() as con:
+        con.execute(
+            "INSERT OR REPLACE INTO content (key, value) VALUES ('main', ?)",
+            (json_lib.dumps(body, ensure_ascii=False),)
+        )
+    return {"ok": True}
 
 @app.get("/api/admin/kontakt")
 def admin_kontakt_list(request: Request):

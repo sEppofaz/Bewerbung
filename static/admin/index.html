@@ -137,6 +137,10 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
     Analytics
   </button>
+  <button class="tab" onclick="showTab('inhalte')" id="tab-inhalte">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+    Inhalte
+  </button>
   <button class="tab" onclick="showTab('kontakt')" id="tab-kontakt">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     Kontakt
@@ -192,6 +196,45 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
   </div>
 </div>
 
+<!-- ── INHALTE ── -->
+<div class="screen" id="screen-inhalte">
+
+  <!-- Über mich -->
+  <div class="card">
+    <div class="card-title">Über mich – Text</div>
+    <div style="display:grid;gap:10px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Deutsch</div>
+        <textarea id="ed-ueber-de" style="width:100%;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);font-family:inherit;resize:vertical;min-height:120px;outline:none;" onchange="markDirty()"></textarea>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">English</div>
+        <textarea id="ed-ueber-en" style="width:100%;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);font-family:inherit;resize:vertical;min-height:120px;outline:none;" onchange="markDirty()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="card">
+    <div class="card-title">Was ich kann – Skills</div>
+    <div id="ed-skills-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+    <button class="btn-sm primary" onclick="addSkill()" style="width:100%;padding:10px;justify-content:center;">+ Skill hinzufügen</button>
+  </div>
+
+  <!-- Was ich suche -->
+  <div class="card">
+    <div class="card-title">Was ich suche – 3 Punkte</div>
+    <div id="ed-suche-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+  </div>
+
+  <!-- Speichern -->
+  <div style="position:sticky;bottom:calc(16px + env(safe-area-inset-bottom));z-index:10;padding-top:8px;">
+    <button id="btn-save-content" onclick="saveContent()" style="width:100%;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;min-height:52px;box-shadow:0 4px 20px rgba(0,0,0,.25);">Änderungen speichern</button>
+    <div id="save-msg" style="text-align:center;font-size:13px;margin-top:8px;display:none;"></div>
+  </div>
+
+</div>
+
 <!-- ── KONTAKT ── -->
 <div class="screen" id="screen-kontakt">
   <div class="kontakt-list" id="kontakt-list"><div class="empty">Lade…</div></div>
@@ -224,6 +267,7 @@ function showTab(name) {
   if (name === 'tokens')  loadTokens();
   if (name === 'events')  loadEvents();
   if (name === 'kontakt') loadKontakt();
+  if (name === 'inhalte') loadInhalte();
 }
 
 // ---------------------------------------------------------------------------
@@ -406,6 +450,98 @@ async function loadKontakt() {
       <div class="kontakt-ts">${k.ts.replace('T', ' ').slice(0, 16)}</div>
     </div>
   `).join('');
+}
+
+// ---------------------------------------------------------------------------
+// Inhalte-Editor
+// ---------------------------------------------------------------------------
+let edContent = {};
+let isDirty = false;
+
+function markDirty() { isDirty = true; }
+
+async function loadInhalte() {
+  const r = await fetch('/api/content');
+  edContent = await r.json();
+  // Über mich
+  document.getElementById('ed-ueber-de').value = edContent.ueber_mich?.de || '';
+  document.getElementById('ed-ueber-en').value = edContent.ueber_mich?.en || '';
+  // Skills
+  renderEditorSkills();
+  // Suche
+  renderEditorSuche();
+}
+
+function renderEditorSkills() {
+  const el = document.getElementById('ed-skills-list');
+  el.innerHTML = (edContent.skills || []).map((s, i) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;align-items:center;" id="skill-row-${i}">
+      <input style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${s.de}" placeholder="Deutsch" oninput="edContent.skills[${i}].de=this.value;markDirty()">
+      <input style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${s.en}" placeholder="English" oninput="edContent.skills[${i}].en=this.value;markDirty()">
+      <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;">
+        <input type="checkbox" ${s.highlight ? 'checked' : ''} onchange="edContent.skills[${i}].highlight=this.checked;markDirty()"> Hervor
+      </label>
+      <button class="btn-sm danger" onclick="removeSkill(${i})" style="padding:6px 10px;">✕</button>
+    </div>
+  `).join('');
+}
+
+function addSkill() {
+  edContent.skills = edContent.skills || [];
+  edContent.skills.push({ de: '', en: '', highlight: false });
+  renderEditorSkills();
+  markDirty();
+}
+
+function removeSkill(i) {
+  edContent.skills.splice(i, 1);
+  renderEditorSkills();
+  markDirty();
+}
+
+function renderEditorSuche() {
+  const el = document.getElementById('ed-suche-list');
+  el.innerHTML = (edContent.suche || [{},{},{}]).map((s, i) => `
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Punkt ${i+1}</div>
+      <div style="display:grid;gap:8px;">
+        <input style="padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${s.de||''}" placeholder="Deutsch" oninput="edContent.suche[${i}]={...edContent.suche[${i}],de:this.value};markDirty()">
+        <input style="padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${s.en||''}" placeholder="English" oninput="edContent.suche[${i}]={...edContent.suche[${i}],en:this.value};markDirty()">
+      </div>
+    </div>
+  `).join('');
+}
+
+async function saveContent() {
+  const btn = document.getElementById('btn-save-content');
+  const msg = document.getElementById('save-msg');
+  // Über-mich aus Textareas lesen
+  edContent.ueber_mich = {
+    de: document.getElementById('ed-ueber-de').value.trim(),
+    en: document.getElementById('ed-ueber-en').value.trim()
+  };
+  btn.disabled = true;
+  btn.textContent = 'Speichere…';
+  try {
+    const r = await fetch('/api/admin/content', {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(edContent)
+    });
+    if (r.ok) {
+      msg.style.display = 'block';
+      msg.style.color = 'var(--green)';
+      msg.textContent = '✓ Gespeichert';
+      isDirty = false;
+      setTimeout(() => msg.style.display = 'none', 2500);
+    } else throw new Error();
+  } catch {
+    msg.style.display = 'block';
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Fehler beim Speichern';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Änderungen speichern';
+  }
 }
 
 // ---------------------------------------------------------------------------

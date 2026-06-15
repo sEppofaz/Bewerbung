@@ -279,32 +279,11 @@ main {
       </div>
     </div>
     <!-- INHALT EINTRAGEN -->
-    <div class="profile-text"
-         data-de="Dipl.-Wirtschaftsingenieur mit über 20 Jahren Erfahrung im Engineering-Dienstleistungsbereich und Projektmanagement. Zuletzt als Prokurist und Centre Manager bei QuEST Global in München verantwortlich für bis zu 320 Mitarbeiter und 28 Mio. $ Umsatz. Neben meiner Führungsrolle entwickle ich eigenständig Webanwendungen und Automatisierungslösungen – mit KI-Unterstützung durch Claude Code (Vibe-Coding). Ich kombiniere strategisches Denken mit technischer Umsetzungsstärke und einem ausgeprägten Sinn für effiziente Prozesse."
-         data-en="Graduate engineer (Dipl.-Wirtschaftsingenieur) with 20+ years in engineering services and project management. Most recently Prokurist (proxy) and Centre Manager at QuEST Global Munich, responsible for up to 320 employees and USD 28M revenue. Alongside my leadership role I independently develop web applications and automation solutions using AI-assisted development (Vibe-Coding with Claude Code). I combine strategic thinking with strong hands-on execution and a keen sense for efficient processes.">
-      Dipl.-Wirtschaftsingenieur mit über 20 Jahren Erfahrung im Engineering-Dienstleistungsbereich und Projektmanagement. Zuletzt als Prokurist und Centre Manager bei QuEST Global in München verantwortlich für bis zu 320 Mitarbeiter und 28 Mio. $ Umsatz. Neben meiner Führungsrolle entwickle ich eigenständig Webanwendungen und Automatisierungslösungen – mit KI-Unterstützung durch Claude Code (Vibe-Coding). Ich kombiniere strategisches Denken mit technischer Umsetzungsstärke und einem ausgeprägten Sinn für effiziente Prozesse.
-    </div>
+    <div class="profile-text" id="profile-text">…</div>
   </div>
 
   <div class="section-title" data-de="Was ich kann" data-en="What I do">Was ich kann</div>
-  <div class="skills-grid">
-    <div class="skill-chip highlight">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      AI-assisted Development
-    </div>
-    <div class="skill-chip highlight">Programmmanagement</div>
-    <div class="skill-chip highlight">Business Development</div>
-    <div class="skill-chip">Change Management</div>
-    <div class="skill-chip">Prozessberatung</div>
-    <div class="skill-chip">Engineering Services</div>
-    <div class="skill-chip">Führung (bis 320 MA)</div>
-    <div class="skill-chip">Progressive Web Apps</div>
-    <div class="skill-chip">FastAPI · Python</div>
-    <div class="skill-chip">HTML · CSS · JavaScript</div>
-    <div class="skill-chip">Linux · nginx · Server</div>
-    <div class="skill-chip">Prozessautomatisierung</div>
-    <div class="skill-chip">Git / GitHub</div>
-  </div>
+  <div class="skills-grid" id="skills-grid"></div>
 
   <div class="section-title" data-de="Was ich suche" data-en="What I'm looking for">Was ich suche</div>
   <div class="info-card">
@@ -312,11 +291,7 @@ main {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <span data-de="Meine Wunschstelle" data-en="My ideal role">Meine Wunschstelle</span>
     </div>
-    <ul class="info-card-list">
-      <li data-de="Führungsrolle mit digitalem Anteil – Engineering Services, Digitalisierung, Tech oder Prozessautomatisierung" data-en="Leadership role with a digital component – engineering services, digitisation, tech or process automation">Führungsrolle mit digitalem Anteil – Engineering Services, Digitalisierung, Tech oder Prozessautomatisierung</li>
-      <li data-de="Vollzeit oder Hybrid – offen für verschiedene Modelle" data-en="Full-time or hybrid – open to different models">Vollzeit oder Hybrid – offen für verschiedene Modelle</li>
-      <li data-de="Raum München / Bayern oder remote-freundlich" data-en="Munich / Bavaria area or remote-friendly">Raum München / Bayern oder remote-freundlich</li>
-    </ul>
+    <ul class="info-card-list" id="suche-list"></ul>
   </div>
 
   <div class="section-title" data-de="Besonderheit" data-en="Highlight">Besonderheit</div>
@@ -754,19 +729,48 @@ main {
 
 <script>
 // ---------------------------------------------------------------------------
-// Auth-Check
+// Auth-Check + Content-Load
 // ---------------------------------------------------------------------------
 let firmName = '';
+let siteContent = {};
+
 async function init() {
   try {
-    const r = await fetch('/api/me');
-    if (!r.ok) { window.location.href = '/'; return; }
-    const d = await r.json();
+    const [meR, contentR] = await Promise.all([
+      fetch('/api/me'),
+      fetch('/api/content')
+    ]);
+    if (!meR.ok) { window.location.href = '/'; return; }
+    const d = await meR.json();
     firmName = d.firm_name;
     document.getElementById('hd-firma').textContent = firmName;
+    siteContent = await contentR.json();
+    renderContent();
   } catch { window.location.href = '/'; }
 }
 init();
+
+function renderContent() {
+  const l = currentLang;
+  // Über mich
+  const pt = document.getElementById('profile-text');
+  if (pt && siteContent.ueber_mich) pt.textContent = siteContent.ueber_mich[l] || '';
+  // Skills
+  const sg = document.getElementById('skills-grid');
+  if (sg && siteContent.skills) {
+    sg.innerHTML = siteContent.skills.map(s => {
+      const txt = s[l] || s.de || '';
+      return `<div class="skill-chip${s.highlight ? ' highlight' : ''}">${txt}</div>`;
+    }).join('');
+  }
+  // Was ich suche
+  const sl = document.getElementById('suche-list');
+  if (sl && siteContent.suche) {
+    sl.innerHTML = siteContent.suche.map(s =>
+      `<li>${s[l] || s.de || ''}</li>`
+    ).join('');
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Lang
@@ -782,6 +786,7 @@ function setLang(l) {
   });
   document.getElementById('btn-de').classList.toggle('active', l === 'de');
   document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  if (Object.keys(siteContent).length) renderContent();
 }
 setLang(currentLang);
 
