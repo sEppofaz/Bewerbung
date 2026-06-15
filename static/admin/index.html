@@ -251,7 +251,7 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
   <div class="card">
     <div class="card-title">Lebenslauf-PDFs</div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Nach dem Speichern von Änderungen hier die PDFs neu generieren. DE-Version aus den gespeicherten Inhalten, EN-Version aus vorhandenen Übersetzungen.</p>
-    <button onclick="generatePdfs()" id="btn-gen-pdf" style="width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">PDFs generieren (DE + EN)</button>
+    <button onclick="generatePdfs()" id="btn-gen-pdf" style="width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">🌐 Übersetzen (DE→EN) + PDFs generieren</button>
     <div id="gen-msg" style="text-align:center;font-size:13px;margin-top:8px;display:none;"></div>
   </div>
 
@@ -787,18 +787,18 @@ async function saveCv() {
 async function generatePdfs() {
   const btn = document.getElementById('btn-gen-pdf');
   const msg = document.getElementById('gen-msg');
-  btn.disabled = true; btn.textContent = 'Generiere PDFs…';
+  btn.disabled = true; btn.textContent = 'Übersetze & generiere PDFs…';
   try {
     const r = await fetch('/api/admin/generate-cv-pdfs', { method: 'POST' });
     const d = await r.json();
     if (d.ok) {
       msg.style.display='block'; msg.style.color='var(--green)';
-      msg.textContent = '✓ lebenslauf_de.pdf + lebenslauf_en.pdf erstellt';
+      msg.textContent = '✓ Übersetzt + lebenslauf_de.pdf + lebenslauf_en.pdf erstellt';
       setTimeout(() => msg.style.display='none', 4000);
     } else throw new Error();
   } catch {
     msg.style.display='block'; msg.style.color='var(--red)'; msg.textContent='Fehler beim Generieren';
-  } finally { btn.disabled=false; btn.textContent='PDFs generieren (DE + EN)'; }
+  } finally { btn.disabled=false; btn.textContent='🌐 Übersetzen (DE→EN) + PDFs generieren'; }
 }
 
 // Scroll-to-Top

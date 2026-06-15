@@ -27,6 +27,7 @@ TG_BOT      = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT     = os.environ.get("TELEGRAM_CHAT_ID", "")
 SECRET_KEY  = os.environ.get("BEWERBUNG_SECRET_KEY", secrets.token_hex(32))
 HTTPS_ONLY  = os.environ.get("HTTPS_ONLY", "true").lower() == "true"
+CLAUDE_KEY  = os.environ.get("CLAUDE_API_KEY", "")
 
 app = FastAPI(docs_url=None, redoc_url=None)
 app.add_middleware(
@@ -221,6 +222,32 @@ _DEFAULT_CONTENT = {
         "interessen_en": "Family · walking & running · Vibe-Coding · forestry · fire brigade · skiing · cycling · swimming · reading"
     }
 }
+
+def _translate_cv_to_en(cv: dict) -> dict:
+    """Übersetzt alle DE-Felder im CV via Claude API nach EN. Gibt aktualisiertes CV zurück."""
+    if not CLAUDE_KEY:
+        return cv
+    prompt = (
+        "Du bist ein professioneller Übersetzer fuer Lebenslaeufe (DE→EN).\n"
+        "Fuelle im folgenden JSON alle *_en-Felder und alle 'en'-Schluessel mit der englischen Uebersetzung des jeweiligen *_de / 'de'-Felds.\n"
+        "Firmen- und Institutionsnamen unveraendert lassen.\n"
+        "Fachbegriff 'Prokurist' als 'Proxy (Prokurist)' uebersetzen.\n"
+        "Professioneller Business-Stil. Gib NUR das aktualisierte JSON zurueck, kein Kommentar.\n\n"
+        + json_lib.dumps(cv, ensure_ascii=False)
+    )
+    resp = http.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+        json={"model": "claude-haiku-4-5-20251001", "max_tokens": 8192,
+              "messages": [{"role": "user", "content": prompt}]},
+        timeout=60,
+    )
+    resp.raise_for_status()
+    text = resp.json()["content"][0]["text"].strip()
+    if text.startswith("```"):
+        text = "\n".join(text.split("\n")[1:])
+        text = text.rsplit("```", 1)[0]
+    return json_lib.loads(text.strip())
 
 def _merge_cv(existing: dict, updated: dict) -> dict:
     """DE-Felder aus updated übernehmen, EN-Felder aus existing behalten."""
@@ -549,6 +576,15 @@ async def generate_cv_pdfs(request: Request):
     from weasyprint import HTML as WP_HTML
     content = _get_content()
     cv = content.get("cv", _DEFAULT_CONTENT["cv"])
+    # DE → EN übersetzen und EN-Felder in DB zurückschreiben
+    cv = _translate_cv_to_en(cv)
+    content["cv"] = cv
+    with db() as con:
+        con.execute(
+            "INSERT OR REPLACE INTO content (key, value) VALUES ('main', ?)",
+            (json_lib.dumps(content, ensure_ascii=False),)
+        )
+    # Beide PDFs generieren
     tmpl = _jinja.get_template("cv_print.html")
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)
     for lang in ("de", "en"):
