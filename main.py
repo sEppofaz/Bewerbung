@@ -131,8 +131,8 @@ _DEFAULT_CONTENT = {
                 "punkte": [
                     {"de": "seit 04/2024: Strategic Delivery Partner BMW VAU – bis zu 320 Mitarbeiter, 28 Mio. $ Umsatz", "en": "Since 04/2024: Strategic Delivery Partner BMW VAU – up to 320 employees, USD 28M revenue"},
                     {"de": "01/2022 – 03/2024: Head of Delivery Germany – regional verantwortlich für Delivery Excellence und Business Development", "en": "01/2022 – 03/2024: Head of Delivery Germany – regional responsibility for delivery excellence and business development"},
-                    {"de": "11/2019 – 12/2021: Program Manager für Delivery Units „Project Management" und „Electrics, Electronics & Software Services"", "en": "11/2019 – 12/2021: Program Manager for Delivery Units 'Project Management' and 'Electrics, Electronics & Software Services'"},
-                    {"de": "11/2018 – 12/2021: Program Manager Delivery Unit „Project Management" – Projektimplementierung, -durchführung und Aufbau neuer Projekte", "en": "11/2018 – 12/2021: Program Manager Delivery Unit 'Project Management' – project implementation, execution and new project setup"}
+                    {"de": "11/2019 – 12/2021: Program Manager für Delivery Units 'Project Management' und 'Electrics, Electronics & Software Services'", "en": "11/2019 – 12/2021: Program Manager for Delivery Units 'Project Management' and 'Electrics, Electronics & Software Services'"},
+                    {"de": "11/2018 – 12/2021: Program Manager Delivery Unit 'Project Management' – Projektimplementierung, -durchführung und Aufbau neuer Projekte", "en": "11/2018 – 12/2021: Program Manager Delivery Unit 'Project Management' – project implementation, execution and new project setup"}
                 ]
             },
             {
@@ -212,7 +212,7 @@ _DEFAULT_CONTENT = {
             {"de": "SQLite · Git · GitHub", "en": "SQLite · Git · GitHub", "highlight": False}
         ],
         "engagement": [
-            {"de": "2021, 2022: Teilnehmer QuEST „Odyssey" – Top Level Leadership Program", "en": "2021, 2022: Participant in QuEST 'Odyssey' – Top Level Leadership Program"},
+            {"de": "2021, 2022: Teilnehmer QuEST 'Odyssey' – Top Level Leadership Program", "en": "2021, 2022: Participant in QuEST 'Odyssey' – Top Level Leadership Program"},
             {"de": "SS 2002: Initiator der Gründung einer Studentenberatung in Clausthal-Zellerfeld", "en": "SS 2002: Initiator of founding a student consultancy in Clausthal-Zellerfeld"},
             {"de": "05/2000 – 06/2001: 1. Vorsitzender der VWI-Hochschulgruppe Clausthal e.V.", "en": "05/2000 – 06/2001: 1st Chairman of the VWI-Hochschulgruppe Clausthal e.V."},
             {"de": "Mitglied der Freiwilligen Feuerwehr und eines Trachtenvereins", "en": "Member of the local volunteer fire brigade and a traditional Bavarian club"}
