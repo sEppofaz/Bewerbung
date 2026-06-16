@@ -7,11 +7,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color: #1c1917; line-height: 1.4; }
 
-.header { background: #1e3a5f; color: white; padding: 22px 24px; border-radius: 8px; margin-bottom: 14px; }
+.header { background: #1e3a5f; color: white; padding: 22px 24px; border-radius: 8px; margin-bottom: 10px; }
 .h-name  { font-size: 21pt; font-weight: 800; margin-bottom: 3px; }
 .h-title { font-size: 10.5pt; opacity: .8; margin-bottom: 12px; }
 .h-contacts { display: flex; gap: 22px; flex-wrap: wrap; }
-.h-contact  { font-size: 9pt; opacity: .85; }
+.h-contact  { font-size: 9pt; opacity: .85; color: white; text-decoration: none; }
+
+.summary { font-size: 9.5pt; color: #44403c; line-height: 1.55; margin-bottom: 13px; break-inside: avoid; }
 
 .section    { margin-bottom: 13px; }
 .sec-title  { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
@@ -19,6 +21,7 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color:
 
 .entry        { margin-bottom: 10px; }
 .entry:last-child { margin-bottom: 0; }
+.entry-anchor { break-inside: avoid; }
 .entry-head   { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .entry-firma  { font-size: 10pt; font-weight: 700; }
 .entry-date   { font-size: 8.5pt; color: #666; white-space: nowrap; flex-shrink: 0; }
@@ -44,24 +47,38 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color:
   <div class="h-name">{{ cv.person.name }}</div>
   <div class="h-title">{{ cv.person.titel_de if lang == 'de' else cv.person.titel_en }}</div>
   <div class="h-contacts">
-    <span class="h-contact">✉ {{ cv.person.email }}</span>
+    <a href="mailto:{{ cv.person.email }}" class="h-contact">✉ {{ cv.person.email }}</a>
     {% if cv.person.wohnort %}<span class="h-contact">⌂ {{ cv.person.wohnort }}</span>{% endif %}
+    {% if cv.person.homepage %}<a href="{{ cv.person.homepage }}" class="h-contact">🌐 {{ cv.person.homepage | replace('https://', '') }}</a>{% endif %}
     <span class="h-contact">{{ cv.person.info_de if lang == 'de' else cv.person.info_en }}</span>
   </div>
 </div>
+
+{% set summary_text = ueber_mich.de if lang == 'de' else (ueber_mich.en or ueber_mich.de) %}
+{% if summary_text %}
+<p class="summary">{{ summary_text }}</p>
+{% endif %}
 
 <div class="section">
   <div class="sec-title">{{ 'Berufserfahrung' if lang == 'de' else 'Work Experience' }}</div>
   {% for job in cv.berufserfahrung %}
   <div class="entry">
-    <div class="entry-head">
-      <div class="entry-firma">{{ job.firma_de if lang == 'de' else (job.firma_en or job.firma_de) }}</div>
-      <div class="entry-date">{{ job.zeitraum }}</div>
+    {# Kopf + erste 3 Punkte immer zusammenhalten #}
+    <div class="entry-anchor">
+      <div class="entry-head">
+        <div class="entry-firma">{{ job.firma_de if lang == 'de' else (job.firma_en or job.firma_de) }}</div>
+        <div class="entry-date">{{ job.zeitraum }}</div>
+      </div>
+      <div class="entry-rolle">{{ job.rolle_de if lang == 'de' else (job.rolle_en or job.rolle_de) }}</div>
+      {% if job.punkte %}
+      <ul class="entry-points">
+        {% for p in job.punkte[:3] %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
+      </ul>
+      {% endif %}
     </div>
-    <div class="entry-rolle">{{ job.rolle_de if lang == 'de' else (job.rolle_en or job.rolle_de) }}</div>
-    {% if job.punkte %}
+    {% if job.punkte|length > 3 %}
     <ul class="entry-points">
-      {% for p in job.punkte %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
+      {% for p in job.punkte[3:] %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
     </ul>
     {% endif %}
   </div>
@@ -73,14 +90,21 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; color:
   <div class="sec-title">{{ 'Studium & Ausbildung' if lang == 'de' else 'Education & Training' }}</div>
   {% for edu in cv.ausbildung %}
   <div class="entry">
-    <div class="entry-head">
-      <div class="entry-firma">{{ edu.titel_de if lang == 'de' else (edu.titel_en or edu.titel_de) }}</div>
-      <div class="entry-date">{{ edu.zeitraum }}</div>
+    <div class="entry-anchor">
+      <div class="entry-head">
+        <div class="entry-firma">{{ edu.titel_de if lang == 'de' else (edu.titel_en or edu.titel_de) }}</div>
+        <div class="entry-date">{{ edu.zeitraum }}</div>
+      </div>
+      {% if edu.institution %}<div class="entry-inst">{{ edu.institution }}</div>{% endif %}
+      {% if edu.punkte %}
+      <ul class="entry-points">
+        {% for p in edu.punkte[:3] %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
+      </ul>
+      {% endif %}
     </div>
-    {% if edu.institution %}<div class="entry-inst">{{ edu.institution }}</div>{% endif %}
-    {% if edu.punkte %}
+    {% if edu.punkte|length > 3 %}
     <ul class="entry-points">
-      {% for p in edu.punkte %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
+      {% for p in edu.punkte[3:] %}<li>{{ p.de if lang == 'de' else (p.en or p.de) }}</li>{% endfor %}
     </ul>
     {% endif %}
   </div>

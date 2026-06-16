@@ -104,6 +104,99 @@ _DEFAULT_CONTENT = {
         {"de": "Prozessautomatisierung", "en": "Process Automation", "highlight": False},
         {"de": "Git / GitHub", "en": "Git / GitHub", "highlight": False}
     ],
+    "projekte": [
+        {
+            "id": "vko",
+            "kategorie": "coding",
+            "name_de": "Community Event Calendar",
+            "name_en": "Community Event Calendar",
+            "url": "https://vereinskalender.online",
+            "url_label_de": "vereinskalender.online",
+            "url_label_en": "vereinskalender.online",
+            "beschreibung_de": "PWA für Vereine und Gemeinden zur Verwaltung und Anzeige von Veranstaltungen. Mehrsprachig (DE/EN), Offline-fähig, Admin-Bereich mit Vereinsverwaltung, Telegram-Bot-Integration, automatische Exportfunktionen.",
+            "beschreibung_en": "PWA for clubs and communities to manage and display events. Multilingual (DE/EN), offline-capable, admin area with club management, Telegram bot integration, automatic export functions.",
+            "tags": ["FastAPI", "SQLite", "PWA", "Telegram Bot", "nginx"],
+            "reihenfolge": 1
+        },
+        {
+            "id": "ai-remote",
+            "kategorie": "coding",
+            "name_de": "AI Remote Interface",
+            "name_en": "AI Remote Interface",
+            "url": "",
+            "url_label_de": "Internes Tool · Self-hosted",
+            "url_label_en": "Internal tool · Self-hosted",
+            "beschreibung_de": "Web-Interface zur Fernsteuerung eines lokal laufenden KI-Assistenten über einen selbst-gehosteten Server. Ermöglicht die Nutzung von AI-Unterstützung von überall, ohne die Daten in die Cloud zu senden.",
+            "beschreibung_en": "Web interface for remotely controlling a locally running AI assistant via a self-hosted server. Enables AI assistance from anywhere without sending data to the cloud.",
+            "tags": ["Flask", "WebSocket", "nginx", "Hetzner", "AI"],
+            "reihenfolge": 2
+        },
+        {
+            "id": "dok-auto",
+            "kategorie": "coding",
+            "name_de": "Dokument-Automatisierung",
+            "name_en": "Document Automation",
+            "url": "",
+            "url_label_de": "Webhook-Service · Self-hosted",
+            "url_label_en": "Webhook service · Self-hosted",
+            "beschreibung_de": "Automatischer Service der gescannte Dokumente aus einem Dropbox-Ordner per KI analysiert, benennt und kategorisiert. Läuft vollautomatisch als Hintergrundservice auf einem eigenen Server.",
+            "beschreibung_en": "Automated service that analyses, names and categorises scanned documents from a Dropbox folder using AI. Runs fully automatically as a background service on a dedicated server.",
+            "tags": ["FastAPI", "Dropbox API", "systemd", "Claude API"],
+            "reihenfolge": 3
+        },
+        {
+            "id": "task-mgr",
+            "kategorie": "coding",
+            "name_de": "Personal Task Manager",
+            "name_en": "Personal Task Manager",
+            "url": "",
+            "url_label_de": "PWA · Self-hosted",
+            "url_label_en": "PWA · Self-hosted",
+            "beschreibung_de": "PWA zur persönlichen Aufgabenverwaltung mit Kategorien, Prioritäten, Fälligkeitsdaten und KI-Integration. Dient als zentrales SSOT für persönliche und berufliche Todos.",
+            "beschreibung_en": "PWA for personal task management with categories, priorities, due dates and AI integration. Serves as central single source of truth for personal and professional todos.",
+            "tags": ["PWA", "JSON SSOT", "GitHub Pages"],
+            "reihenfolge": 4
+        },
+        {
+            "id": "rechnung",
+            "kategorie": "coding",
+            "name_de": "Rechnungserstellung & -verwaltung",
+            "name_en": "Invoice Creation & Management",
+            "url": "",
+            "url_label_de": "Zwei getrennte Apps · Self-hosted",
+            "url_label_en": "Two separate apps · Self-hosted",
+            "beschreibung_de": "Zwei PWAs: Eine für die automatische Rechnungserstellung aus Word-Vorlagen (mit Variablen-Ersatz, PDF-Ausgabe), eine zweite für die strukturierte Anzeige und Verwaltung aller Rechnungen nach Kunden und Datum.",
+            "beschreibung_en": "Two PWAs: one for automatic invoice creation from Word templates (with variable substitution, PDF output), a second for structured display and management of all invoices by customer and date.",
+            "tags": ["FastAPI", "python-docx", "PWA", "LibreOffice"],
+            "reihenfolge": 5
+        },
+        {
+            "id": "vokabel",
+            "kategorie": "coding",
+            "name_de": "Vokabeltrainer",
+            "name_en": "Vocabulary Trainer",
+            "url": "",
+            "url_label_de": "PWA · GitHub Pages",
+            "url_label_en": "PWA · GitHub Pages",
+            "beschreibung_de": "Lernapp für Vokabeln mit mehreren Quiz-Modi (Lückentext, Multiple Choice, Schreiben), Spaced-Repetition-Logik, Offline-Fähigkeit und Statistiken.",
+            "beschreibung_en": "Learning app for vocabulary with multiple quiz modes (fill-in-the-blank, multiple choice, writing), spaced repetition logic, offline capability and statistics.",
+            "tags": ["PWA", "Service Worker", "Dropbox API", "GitHub Pages"],
+            "reihenfolge": 6
+        },
+        {
+            "id": "bewerbung",
+            "kategorie": "coding",
+            "name_de": "Digitale Bewerbungsseite",
+            "name_en": "Digital Application Site",
+            "url": "https://fischer-josef.de",
+            "url_label_de": "fischer-josef.de",
+            "url_label_en": "fischer-josef.de",
+            "beschreibung_de": "Diese Seite: Interaktive Bewerbungsmappe mit token-basiertem Zugang, mehrsprachigem Lebenslauf (DE/EN), automatischer PDF-Generierung via KI-Übersetzung, Admin-Bereich und Telegram-Benachrichtigungen.",
+            "beschreibung_en": "This site: interactive application portfolio with token-based access, multilingual CV (DE/EN), automatic PDF generation via AI translation, admin area and Telegram notifications.",
+            "tags": ["FastAPI", "SQLite", "PWA", "WeasyPrint", "Claude API"],
+            "reihenfolge": 7
+        }
+    ],
     "suche": [
         {"de": "Führungsrolle mit digitalem Anteil – Engineering Services, Digitalisierung, Tech oder Prozessautomatisierung",
          "en": "Leadership role with a digital component – engineering services, digitisation, tech or process automation"},
@@ -120,7 +213,8 @@ _DEFAULT_CONTENT = {
             "info_de": "geb. 24.06.1973 · verheiratet · 2 Kinder",
             "info_en": "born 24.06.1973 · married · 2 children",
             "email": "josef.jf.fischer@me.com",
-            "wohnort": "Bayerbach"
+            "wohnort": "Bayerbach",
+            "homepage": "https://fischer-josef.de"
         },
         "berufserfahrung": [
             {
@@ -304,6 +398,10 @@ def require_firm(request: Request) -> int:
         raise HTTPException(401, "Nicht eingeloggt")
     return int(fid)
 
+def require_firm_or_admin(request: Request):
+    if not request.session.get("firm_id") and not request.session.get("admin"):
+        raise HTTPException(401, "Nicht eingeloggt")
+
 def require_admin(request: Request):
     if not request.session.get("admin"):
         raise HTTPException(401, "Kein Admin-Zugang")
@@ -357,7 +455,7 @@ def landing():
 
 @app.get("/app/", response_class=HTMLResponse)
 def app_page(request: Request):
-    if not request.session.get("firm_id"):
+    if not request.session.get("firm_id") and not request.session.get("admin"):
         return RedirectResponse("/", status_code=302)
     return FileResponse(STATIC_DIR / "app" / "index.html", headers={"Cache-Control": "no-store"})
 
@@ -380,7 +478,7 @@ def vko_logo():
 
 @app.get("/assets/lebenslauf.pdf")
 def lebenslauf_pdf(request: Request):
-    require_firm(request)
+    require_firm_or_admin(request)
     # Weiterleitung auf generierte DE-Version, Fallback auf originale Datei
     de_path = ASSETS_DIR / "lebenslauf_de.pdf"
     if de_path.exists():
@@ -420,6 +518,8 @@ def logout(request: Request):
 def me(request: Request):
     fid = request.session.get("firm_id")
     if not fid:
+        if request.session.get("admin"):
+            return {"firm_id": 0, "firm_name": "Admin-Vorschau"}
         raise HTTPException(401)
     return {"firm_id": fid, "firm_name": request.session.get("firm_name")}
 
@@ -557,6 +657,8 @@ async def put_content(request: Request):
     body = await request.json()
     if not all(k in body for k in ("ueber_mich", "skills", "suche")):
         raise HTTPException(400, "Fehlende Felder")
+    if "projekte" not in body:
+        body["projekte"] = existing.get("projekte", _DEFAULT_CONTENT.get("projekte", []))
     # cv-Key: vorhandene EN-Felder aus bisherigem Stand übernehmen
     existing = _get_content()
     if "cv" not in body:
@@ -588,14 +690,14 @@ async def generate_cv_pdfs(request: Request):
     tmpl = _jinja.get_template("cv_print.html")
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)
     for lang in ("de", "en"):
-        html = tmpl.render(cv=cv, lang=lang)
+        html = tmpl.render(cv=cv, lang=lang, ueber_mich=content.get("ueber_mich", {}))
         pdf = WP_HTML(string=html, base_url=str(BASE)).write_pdf()
         (ASSETS_DIR / f"lebenslauf_{lang}.pdf").write_bytes(pdf)
     return {"ok": True, "files": ["lebenslauf_de.pdf", "lebenslauf_en.pdf"]}
 
 @app.get("/assets/lebenslauf_de.pdf")
 def lebenslauf_de_pdf(request: Request):
-    require_firm(request)
+    require_firm_or_admin(request)
     path = ASSETS_DIR / "lebenslauf_de.pdf"
     if not path.exists():
         raise HTTPException(404, "PDF noch nicht generiert – Admin: Lebenslauf-PDFs generieren")
@@ -603,7 +705,7 @@ def lebenslauf_de_pdf(request: Request):
 
 @app.get("/assets/lebenslauf_en.pdf")
 def lebenslauf_en_pdf(request: Request):
-    require_firm(request)
+    require_firm_or_admin(request)
     path = ASSETS_DIR / "lebenslauf_en.pdf"
     if not path.exists():
         raise HTTPException(404, "PDF noch nicht generiert – Admin: Lebenslauf-PDFs generieren")

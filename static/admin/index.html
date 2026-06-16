@@ -126,7 +126,13 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
     <div class="hd-title">Admin</div>
     <div class="hd-sub">Bewerbung Josef Fischer</div>
   </div>
-  <button class="btn-hd-logout" onclick="doLogout()">Abmelden</button>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="/app/" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Vorschau
+    </a>
+    <button class="btn-hd-logout" onclick="doLogout()">Abmelden</button>
+  </div>
 </header>
 
 <div class="tabs">
@@ -145,6 +151,10 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
   <button class="tab" onclick="showTab('inhalte')" id="tab-inhalte">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
     Inhalte
+  </button>
+  <button class="tab" onclick="showTab('projekte-admin')" id="tab-projekte-admin">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    Projekte
   </button>
   <button class="tab" onclick="showTab('lebenslauf')" id="tab-lebenslauf">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -225,7 +235,8 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
 
   <!-- Skills -->
   <div class="card">
-    <div class="card-title">Was ich kann – Skills</div>
+    <div class="card-title">Was ich kann – Skills (auch für Lebenslauf)</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Reihenfolge per ↑↓ ändern. Diese Skills erscheinen auf der Homepage UND im Lebenslauf.</p>
     <div id="ed-skills-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
     <button class="btn-sm primary" onclick="addSkill()" style="width:100%;padding:10px;justify-content:center;">+ Skill hinzufügen</button>
   </div>
@@ -264,6 +275,7 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
       <div><div class="field-label">Info (DE) – z.B. geb./verheiratet</div><input class="cv-input" id="cv-person-info" oninput="cvDirty()"></div>
       <div><div class="field-label">E-Mail</div><input class="cv-input" id="cv-person-email" oninput="cvDirty()"></div>
       <div><div class="field-label">Wohnort</div><input class="cv-input" id="cv-person-wohnort" oninput="cvDirty()"></div>
+      <div><div class="field-label">Homepage (z.B. https://fischer-josef.de)</div><input class="cv-input" id="cv-person-homepage" oninput="cvDirty()"></div>
     </div>
   </div>
 
@@ -281,11 +293,10 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
     <button class="btn-sm primary" onclick="addEdu()" style="width:100%;padding:10px;justify-content:center;margin-top:8px;">+ Eintrag hinzufügen</button>
   </div>
 
-  <!-- Skills CV -->
-  <div class="card">
+  <!-- Skills CV: wird aus dem Inhalte-Editor (SSOT) übernommen -->
+  <div class="card" style="background:var(--bg3);border-style:dashed;">
     <div class="card-title">Kenntnisse & Skills (CV)</div>
-    <div id="cv-skills-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
-    <button class="btn-sm primary" onclick="addCvSkill()" style="width:100%;padding:10px;justify-content:center;">+ Skill hinzufügen</button>
+    <p style="font-size:13px;color:var(--muted);">Die Skills werden aus dem Tab <strong>Inhalte → Was ich kann</strong> übernommen (gemeinsamer SSOT). Dort bearbeiten und Reihenfolge festlegen.</p>
   </div>
 
   <!-- Engagement -->
@@ -305,6 +316,23 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
   <div style="position:sticky;bottom:calc(16px + env(safe-area-inset-bottom));z-index:10;padding-top:8px;">
     <button id="btn-save-cv" onclick="saveCv()" style="width:100%;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;min-height:52px;box-shadow:0 4px 20px rgba(0,0,0,.25);">Lebenslauf speichern</button>
     <div id="cv-save-msg" style="text-align:center;font-size:13px;margin-top:8px;display:none;"></div>
+  </div>
+</div>
+
+<!-- ── PROJEKTE ADMIN ── -->
+<div class="screen" id="screen-projekte-admin">
+  <div class="card">
+    <div class="card-title">Projekte verwalten</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Reihenfolge per ↑↓ ändern. Kategorie: <strong>coding</strong> = Coding-Projekte · <strong>technik</strong> = Technische Projekte</p>
+    <div id="proj-admin-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-create" onclick="addProjekt('coding')" style="flex:1;">+ Coding-Projekt</button>
+      <button class="btn-create" onclick="addProjekt('technik')" style="flex:1;background:var(--accent);">+ Technisches Projekt</button>
+    </div>
+  </div>
+  <div style="position:sticky;bottom:calc(16px + env(safe-area-inset-bottom));z-index:10;padding-top:8px;">
+    <button id="btn-save-proj" onclick="saveProjekte()" style="width:100%;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;min-height:52px;box-shadow:0 4px 20px rgba(0,0,0,.25);">Projekte speichern</button>
+    <div id="proj-save-msg" style="text-align:center;font-size:13px;margin-top:8px;display:none;"></div>
   </div>
 </div>
 
@@ -337,11 +365,12 @@ function showTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('screen-' + name).classList.add('active');
   window.scrollTo(0, 0);
-  if (name === 'tokens')     loadTokens();
-  if (name === 'events')     loadEvents();
-  if (name === 'kontakt')    loadKontakt();
-  if (name === 'inhalte')    loadInhalte();
-  if (name === 'lebenslauf') loadLebenslauf();
+  if (name === 'tokens')          loadTokens();
+  if (name === 'events')          loadEvents();
+  if (name === 'kontakt')         loadKontakt();
+  if (name === 'inhalte')         loadInhalte();
+  if (name === 'lebenslauf')      loadLebenslauf();
+  if (name === 'projekte-admin')  loadProjekteAdmin();
 }
 
 // ---------------------------------------------------------------------------
@@ -540,6 +569,10 @@ async function loadInhalte() {
   // Über mich
   document.getElementById('ed-ueber-de').value = edContent.ueber_mich?.de || '';
   document.getElementById('ed-ueber-en').value = edContent.ueber_mich?.en || '';
+  // Skills: falls leer, CV-Skills als Basis nehmen
+  if ((!edContent.skills || !edContent.skills.length) && edContent.cv?.skills_cv?.length) {
+    edContent.skills = edContent.cv.skills_cv.map(s => ({ de: s.de, en: s.en, highlight: s.highlight }));
+  }
   // Skills
   renderEditorSkills();
   // Suche
@@ -548,16 +581,30 @@ async function loadInhalte() {
 
 function renderEditorSkills() {
   const el = document.getElementById('ed-skills-list');
+  const n = (edContent.skills || []).length;
   el.innerHTML = (edContent.skills || []).map((s, i) => `
-    <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;align-items:center;" id="skill-row-${i}">
-      <input style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${s.de}" placeholder="Deutsch" oninput="edContent.skills[${i}].de=this.value;markDirty()">
-      <input style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${s.en}" placeholder="English" oninput="edContent.skills[${i}].en=this.value;markDirty()">
+    <div style="display:grid;grid-template-columns:auto 1fr 1fr auto auto;gap:6px;align-items:center;" id="skill-row-${i}">
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <button class="btn-sm" onclick="moveSkill(${i},-1)" ${i===0?'disabled':''} style="padding:2px 6px;font-size:11px;">↑</button>
+        <button class="btn-sm" onclick="moveSkill(${i},1)"  ${i===n-1?'disabled':''} style="padding:2px 6px;font-size:11px;">↓</button>
+      </div>
+      <input style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${esc(s.de||'')}" placeholder="Deutsch" oninput="edContent.skills[${i}].de=this.value;markDirty()">
+      <input style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;" value="${esc(s.en||'')}" placeholder="English" oninput="edContent.skills[${i}].en=this.value;markDirty()">
       <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;">
         <input type="checkbox" ${s.highlight ? 'checked' : ''} onchange="edContent.skills[${i}].highlight=this.checked;markDirty()"> Hervor
       </label>
       <button class="btn-sm danger" onclick="removeSkill(${i})" style="padding:6px 10px;">✕</button>
     </div>
   `).join('');
+}
+
+function moveSkill(i, dir) {
+  const skills = edContent.skills || [];
+  const j = i + dir;
+  if (j < 0 || j >= skills.length) return;
+  [skills[i], skills[j]] = [skills[j], skills[i]];
+  renderEditorSkills();
+  markDirty();
 }
 
 function addSkill() {
@@ -594,6 +641,9 @@ async function saveContent() {
     de: document.getElementById('ed-ueber-de').value.trim(),
     en: document.getElementById('ed-ueber-en').value.trim()
   };
+  // Skills sind SSOT – auch als cv.skills_cv synchronisieren
+  if (!edContent.cv) edContent.cv = {};
+  edContent.cv.skills_cv = (edContent.skills || []).map(s => ({ de: s.de, en: s.en, highlight: s.highlight }));
   btn.disabled = true;
   btn.textContent = 'Speichere…';
   try {
@@ -632,11 +682,12 @@ async function loadLebenslauf() {
   const content = await r.json();
   cvData = content.cv || {};
   const p = cvData.person || {};
-  document.getElementById('cv-person-name').value    = p.name || '';
-  document.getElementById('cv-person-titel').value   = p.titel_de || '';
-  document.getElementById('cv-person-info').value    = p.info_de || '';
-  document.getElementById('cv-person-email').value   = p.email || '';
-  document.getElementById('cv-person-wohnort').value = p.wohnort || '';
+  document.getElementById('cv-person-name').value     = p.name || '';
+  document.getElementById('cv-person-titel').value    = p.titel_de || '';
+  document.getElementById('cv-person-info').value     = p.info_de || '';
+  document.getElementById('cv-person-email').value    = p.email || '';
+  document.getElementById('cv-person-wohnort').value  = p.wohnort || '';
+  document.getElementById('cv-person-homepage').value = p.homepage || '';
   document.getElementById('cv-interessen').value     = cvData.interessen_de || '';
   renderCvBerufe();
   renderCvEdu();
@@ -652,9 +703,9 @@ function renderCvBerufe() {
         <button class="btn-sm danger" onclick="event.preventDefault();removeBeruf(${i})" style="float:right;padding:3px 8px;">✕</button>
       </summary>
       <div style="margin-top:10px;display:grid;gap:8px;">
-        <div><div class="field-label">Firma</div><input class="cv-input" value="${esc(job.firma_de||'')}" oninput="cvData.berufserfahrung[${i}].firma_de=this.value;cvDirty()"></div>
+        <div><div class="field-label">Firma</div><input class="cv-input" value="${esc(job.firma_de||'')}" oninput="if(cvData.berufserfahrung[${i}].firma_de!==this.value)cvData.berufserfahrung[${i}].firma_en='';cvData.berufserfahrung[${i}].firma_de=this.value;cvDirty()"></div>
         <div><div class="field-label">Zeitraum</div><input class="cv-input" value="${esc(job.zeitraum||'')}" oninput="cvData.berufserfahrung[${i}].zeitraum=this.value;cvDirty()"></div>
-        <div><div class="field-label">Rolle / Titel</div><input class="cv-input" value="${esc(job.rolle_de||'')}" oninput="cvData.berufserfahrung[${i}].rolle_de=this.value;cvDirty()"></div>
+        <div><div class="field-label">Rolle / Titel</div><input class="cv-input" value="${esc(job.rolle_de||'')}" oninput="if(cvData.berufserfahrung[${i}].rolle_de!==this.value)cvData.berufserfahrung[${i}].rolle_en='';cvData.berufserfahrung[${i}].rolle_de=this.value;cvDirty()"></div>
         <div><div class="field-label" style="margin-bottom:6px;">Tätigkeitspunkte</div>
           <div id="beruf-punkte-${i}">${renderPunkte(job.punkte||[], 'berufserfahrung', i)}</div>
           <button class="btn-sm" onclick="addPunkt('berufserfahrung',${i})" style="margin-top:6px;">+ Punkt</button>
@@ -671,7 +722,7 @@ function renderCvEdu() {
         <button class="btn-sm danger" onclick="event.preventDefault();removeEdu(${i})" style="float:right;padding:3px 8px;">✕</button>
       </summary>
       <div style="margin-top:10px;display:grid;gap:8px;">
-        <div><div class="field-label">Titel / Abschluss</div><input class="cv-input" value="${esc(edu.titel_de||'')}" oninput="cvData.ausbildung[${i}].titel_de=this.value;cvDirty()"></div>
+        <div><div class="field-label">Titel / Abschluss</div><input class="cv-input" value="${esc(edu.titel_de||'')}" oninput="if(cvData.ausbildung[${i}].titel_de!==this.value)cvData.ausbildung[${i}].titel_en='';cvData.ausbildung[${i}].titel_de=this.value;cvDirty()"></div>
         <div><div class="field-label">Zeitraum</div><input class="cv-input" value="${esc(edu.zeitraum||'')}" oninput="cvData.ausbildung[${i}].zeitraum=this.value;cvDirty()"></div>
         <div><div class="field-label">Institution</div><input class="cv-input" value="${esc(edu.institution||'')}" oninput="cvData.ausbildung[${i}].institution=this.value;cvDirty()"></div>
         <div><div class="field-label" style="margin-bottom:6px;">Punkte</div>
@@ -685,7 +736,7 @@ function renderCvEdu() {
 function renderPunkte(punkte, section, idx) {
   return punkte.map((p, pi) => `
     <div class="cv-punkt-row">
-      <input class="cv-input" value="${esc(p.de||'')}" placeholder="Punkt…" oninput="cvData.${section}[${idx}].punkte[${pi}].de=this.value;cvDirty()">
+      <input class="cv-input" value="${esc(p.de||'')}" placeholder="Punkt…" oninput="if(cvData.${section}[${idx}].punkte[${pi}].de!==this.value)cvData.${section}[${idx}].punkte[${pi}].en='';cvData.${section}[${idx}].punkte[${pi}].de=this.value;cvDirty()">
       <button class="btn-sm danger" onclick="removePunkt('${section}',${idx},${pi})" style="padding:4px 8px;">✕</button>
     </div>`).join('');
 }
@@ -755,11 +806,12 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 async function saveCv() {
   // Person-Daten aus Inputs lesen
   cvData.person = cvData.person || {};
-  cvData.person.name    = document.getElementById('cv-person-name').value.trim();
+  cvData.person.name     = document.getElementById('cv-person-name').value.trim();
   cvData.person.titel_de = document.getElementById('cv-person-titel').value.trim();
   cvData.person.info_de  = document.getElementById('cv-person-info').value.trim();
   cvData.person.email    = document.getElementById('cv-person-email').value.trim();
   cvData.person.wohnort  = document.getElementById('cv-person-wohnort').value.trim();
+  cvData.person.homepage = document.getElementById('cv-person-homepage').value.trim();
   cvData.interessen_de   = document.getElementById('cv-interessen').value.trim();
 
   const btn = document.getElementById('btn-save-cv');
@@ -799,6 +851,103 @@ async function generatePdfs() {
   } catch {
     msg.style.display='block'; msg.style.color='var(--red)'; msg.textContent='Fehler beim Generieren';
   } finally { btn.disabled=false; btn.textContent='🌐 Übersetzen (DE→EN) + PDFs generieren'; }
+}
+
+// ---------------------------------------------------------------------------
+// Projekte-Admin
+// ---------------------------------------------------------------------------
+let projData = [];
+
+async function loadProjekteAdmin() {
+  const r = await fetch('/api/content');
+  const content = await r.json();
+  projData = content.projekte || [];
+  renderProjAdmin();
+}
+
+function renderProjAdmin() {
+  const el = document.getElementById('proj-admin-list');
+  const n = projData.length;
+  el.innerHTML = projData.map((p, i) => `
+    <details class="cv-section-box" style="${p.kategorie === 'technik' ? 'border-color:var(--accent);' : ''}">
+      <summary style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;padding:2px 7px;border-radius:5px;background:${p.kategorie==='technik'?'var(--accent)':'var(--navy)'};color:#fff;flex-shrink:0;">${p.kategorie==='technik'?'Technik':'Coding'}</span>
+        <span style="flex:1;">${esc(p.name_de||'Neues Projekt')}</span>
+        <div style="display:flex;gap:4px;margin-left:auto;">
+          <button class="btn-sm" onclick="event.preventDefault();moveProjekt(${i},-1)" ${i===0?'disabled':''} style="padding:3px 7px;">↑</button>
+          <button class="btn-sm" onclick="event.preventDefault();moveProjekt(${i},1)"  ${i===n-1?'disabled':''} style="padding:3px 7px;">↓</button>
+          <button class="btn-sm danger" onclick="event.preventDefault();removeProjekt(${i})" style="padding:3px 7px;">✕</button>
+        </div>
+      </summary>
+      <div style="margin-top:10px;display:grid;gap:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><div class="field-label">Name (DE)</div><input class="cv-input" value="${esc(p.name_de||'')}" oninput="projData[${i}].name_de=this.value;renderProjAdmin()"></div>
+          <div><div class="field-label">Name (EN)</div><input class="cv-input" value="${esc(p.name_en||'')}" oninput="projData[${i}].name_en=this.value"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><div class="field-label">URL (leer = kein Link)</div><input class="cv-input" value="${esc(p.url||'')}" oninput="projData[${i}].url=this.value"></div>
+          <div><div class="field-label">Link-Label (DE)</div><input class="cv-input" value="${esc(p.url_label_de||'')}" oninput="projData[${i}].url_label_de=this.value"></div>
+        </div>
+        <div><div class="field-label">Beschreibung (DE)</div><textarea style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);font-family:inherit;resize:vertical;min-height:70px;outline:none;" oninput="projData[${i}].beschreibung_de=this.value">${esc(p.beschreibung_de||'')}</textarea></div>
+        <div><div class="field-label">Beschreibung (EN)</div><textarea style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);font-family:inherit;resize:vertical;min-height:70px;outline:none;" oninput="projData[${i}].beschreibung_en=this.value">${esc(p.beschreibung_en||'')}</textarea></div>
+        <div><div class="field-label">Tags (kommagetrennt)</div><input class="cv-input" value="${esc((p.tags||[]).join(', '))}" oninput="projData[${i}].tags=this.value.split(',').map(t=>t.trim()).filter(Boolean)"></div>
+        <div><div class="field-label">Kategorie</div>
+          <select class="cv-input" onchange="projData[${i}].kategorie=this.value;renderProjAdmin()">
+            <option value="coding" ${p.kategorie!=='technik'?'selected':''}>Coding-Projekt</option>
+            <option value="technik" ${p.kategorie==='technik'?'selected':''}>Technisches Projekt</option>
+          </select>
+        </div>
+      </div>
+    </details>
+  `).join('');
+}
+
+function moveProjekt(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= projData.length) return;
+  [projData[i], projData[j]] = [projData[j], projData[i]];
+  projData.forEach((p, idx) => p.reihenfolge = idx + 1);
+  renderProjAdmin();
+}
+
+function removeProjekt(i) {
+  projData.splice(i, 1);
+  projData.forEach((p, idx) => p.reihenfolge = idx + 1);
+  renderProjAdmin();
+}
+
+function addProjekt(kategorie) {
+  projData.push({
+    id: 'proj-' + Date.now(),
+    kategorie: kategorie,
+    name_de: '', name_en: '',
+    url: '', url_label_de: '', url_label_en: '',
+    beschreibung_de: '', beschreibung_en: '',
+    tags: [],
+    reihenfolge: projData.length + 1
+  });
+  renderProjAdmin();
+}
+
+async function saveProjekte() {
+  const btn = document.getElementById('btn-save-proj');
+  const msg = document.getElementById('proj-save-msg');
+  btn.disabled = true; btn.textContent = 'Speichere…';
+  try {
+    const cr = await fetch('/api/content');
+    const fullContent = await cr.json();
+    fullContent.projekte = projData;
+    const r = await fetch('/api/admin/content', {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(fullContent)
+    });
+    if (r.ok) {
+      msg.style.display = 'block'; msg.style.color = 'var(--green)'; msg.textContent = '✓ Gespeichert';
+      setTimeout(() => msg.style.display = 'none', 2500);
+    } else throw new Error();
+  } catch {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)'; msg.textContent = 'Fehler beim Speichern';
+  } finally { btn.disabled = false; btn.textContent = 'Projekte speichern'; }
 }
 
 // Scroll-to-Top
