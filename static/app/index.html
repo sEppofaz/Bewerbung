@@ -381,7 +381,7 @@ main {
         <div class="info-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
         <div class="info-row-text"><a href="mailto:josef.jf.fischer@me.com">josef.jf.fischer@me.com</a></div>
       </div>
-      <button class="btn-logout" onclick="doLogout()" data-de="Abmelden" data-en="Log out">Abmelden</button>
+      <button class="btn-logout" id="btn-logout-info" onclick="doLogout()">Abmelden</button>
     </div>
   </div>
 </div>
@@ -403,6 +403,8 @@ async function init() {
     const d = await meR.json();
     firmName = d.firm_name;
     document.getElementById('hd-firma').textContent = firmName;
+    const logoutBtn = document.getElementById('btn-logout-info');
+    if (logoutBtn) logoutBtn.textContent = firmName === 'Admin-Vorschau' ? '← Zurück zum Admin' : 'Abmelden';
     siteContent = await contentR.json();
     renderContent();
   } catch { window.location.href = '/'; }
@@ -623,7 +625,7 @@ async function sendKontakt() {
 // ---------------------------------------------------------------------------
 async function doLogout() {
   await fetch('/api/logout', { method: 'POST' });
-  window.location.href = '/';
+  window.location.href = firmName === 'Admin-Vorschau' ? '/admin/' : '/';
 }
 
 // ---------------------------------------------------------------------------

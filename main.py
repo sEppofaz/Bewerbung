@@ -511,7 +511,8 @@ async def login(request: Request):
 
 @app.post("/api/logout")
 def logout(request: Request):
-    request.session.clear()
+    request.session.pop("firm_id", None)
+    request.session.pop("firm_name", None)
     return {"ok": True}
 
 @app.get("/api/me")
