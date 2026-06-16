@@ -462,6 +462,18 @@ function renderProjekte(projekte, l) {
   document.getElementById('projekte-technik').innerHTML = technik.map(p => projCard(p, l)).join('');
 }
 
+const PROJ_ICONS = {
+  'vko':      '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  'ai-remote':'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  'dok-auto': '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+  'task-mgr': '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  'rechnung': '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M16 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/>',
+  'vokabel':  '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  'bewerbung':'<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  '_technik': '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  '_default': '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+};
+
 function projCard(p, l) {
   const name = esc(p['name_' + l] || p.name_de || '');
   const desc = esc(p['beschreibung_' + l] || p.beschreibung_de || '');
@@ -475,13 +487,12 @@ function projCard(p, l) {
     return `<span class="proj-tag${isAi ? ' ai' : ''}">${esc(t)}</span>`;
   }).join('');
   const iconColor = p.kategorie === 'technik' ? '#1e5f8a' : 'var(--navy)';
+  const iconSvg = PROJ_ICONS[p.id] || (p.kategorie === 'technik' ? PROJ_ICONS['_technik'] : PROJ_ICONS['_default']);
   return `<div class="proj-card">
     <div class="proj-top">
       <div class="proj-icon" style="background:${iconColor};">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          ${p.kategorie === 'technik'
-            ? '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'
-            : '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>'}
+          ${iconSvg}
         </svg>
       </div>
       <div class="proj-info">
