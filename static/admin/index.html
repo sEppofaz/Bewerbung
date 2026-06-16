@@ -770,6 +770,7 @@ function removeEdu(i) { cvData.ausbildung.splice(i,1); renderCvEdu(); cvDirty();
 
 function renderCvSkills() {
   const el = document.getElementById('cv-skills-list');
+  if (!el) return;
   el.innerHTML = (cvData.skills_cv || []).map((s, i) => `
     <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;">
       <input class="cv-input" value="${esc(s.de||'')}" placeholder="Skill…" oninput="cvData.skills_cv[${i}].de=this.value;cvDirty()">
