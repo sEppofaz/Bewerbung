@@ -44,8 +44,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Header ── */
-header {
+.sticky-top {
   position: sticky; top: 0; z-index: 50;
+}
+header {
   background: var(--navy);
   padding: calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));
   display: flex; align-items: center; gap: 12px;
@@ -67,7 +69,6 @@ header {
   background: var(--bg2); border-bottom: 1px solid var(--border);
   overflow-x: auto; -webkit-overflow-scrolling: touch;
   scrollbar-width: none; padding: 0 4px;
-  position: sticky; top: calc(52px + env(safe-area-inset-top)); z-index: 40;
 }
 .tabs::-webkit-scrollbar { display: none; }
 .tab {
@@ -227,7 +228,8 @@ main {
 
 <div class="ptr" id="ptr"><div class="ptr-spin"></div> <span data-de="Aktualisiere…" data-en="Refreshing…">Aktualisiere…</span></div>
 
-<!-- Header -->
+<!-- Header + Tabs (gemeinsam sticky) -->
+<div class="sticky-top">
 <header>
   <div class="hd-name">
     <div class="hd-title">Josef Fischer</div>
@@ -259,6 +261,7 @@ main {
     <span data-de="Kontakt" data-en="Contact">Kontakt</span>
   </button>
 </div>
+</div><!-- /sticky-top -->
 
 <main>
 
