@@ -108,7 +108,7 @@ _DEFAULT_CONTENT = {
         {
             "id": "vko",
             "kategorie": "coding",
-            "name_de": "Community Event Calendar",
+            "name_de": "Vereinskalender.online",
             "name_en": "Community Event Calendar",
             "url": "https://vereinskalender.online",
             "url_label_de": "vereinskalender.online",
@@ -147,7 +147,7 @@ _DEFAULT_CONTENT = {
         {
             "id": "task-mgr",
             "kategorie": "coding",
-            "name_de": "Personal Task Manager",
+            "name_de": "PKA-Todos",
             "name_en": "Personal Task Manager",
             "url": "",
             "url_label_de": "PWA · Self-hosted",
