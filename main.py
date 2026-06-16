@@ -359,7 +359,11 @@ def _get_content() -> dict:
     with db() as con:
         row = con.execute("SELECT value FROM content WHERE key='main'").fetchone()
     if row:
-        return json_lib.loads(row["value"])
+        content = json_lib.loads(row["value"])
+        for k, v in _DEFAULT_CONTENT.items():
+            if k not in content:
+                content[k] = v
+        return content
     return _DEFAULT_CONTENT
 
 def gen_token_str() -> str:
