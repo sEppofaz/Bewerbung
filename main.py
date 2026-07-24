@@ -374,15 +374,32 @@ def gen_token_str() -> str:
             if not con.execute("SELECT id FROM tokens WHERE token_str=?", (t,)).fetchone():
                 return t
 
+def _split_telegram_message(text: str, limit: int = 4096) -> list[str]:
+    if len(text) <= limit:
+        return [text]
+    parts = []
+    while text:
+        if len(text) <= limit:
+            parts.append(text)
+            break
+        cut = text.rfind("\n", 0, limit)
+        if cut <= 0:
+            cut = limit
+        parts.append(text[:cut])
+        text = text[cut:].lstrip("\n")
+    return parts
+
+
 def telegram(msg: str):
     if not TG_BOT or not TG_CHAT:
         return
     try:
-        http.post(
-            f"https://api.telegram.org/bot{TG_BOT}/sendMessage",
-            json={"chat_id": TG_CHAT, "text": msg, "parse_mode": "HTML"},
-            timeout=5,
-        )
+        for part in _split_telegram_message(msg):
+            http.post(
+                f"https://api.telegram.org/bot{TG_BOT}/sendMessage",
+                json={"chat_id": TG_CHAT, "text": part, "parse_mode": "HTML"},
+                timeout=5,
+            )
     except Exception:
         pass
 
