@@ -159,6 +159,21 @@ server {
 - CV-Daten in SQLite `content`-Tabelle (Key `main`, JSON). Lebenslauf wird dynamisch geladen, nicht hardcoded
 - PDF-Workflow: Admin → Lebenslauf bearbeiten (DE) → „Übersetzen + PDFs generieren" → Claude Haiku übersetzt → WeasyPrint baut PDFs
 - `lebenslauf_de.pdf`, `lebenslauf_en.pdf`, `lebenslauf.pdf` alle in `.gitignore` → manuell auf Server
+- **`_get_content()` Fallback:** DB-Inhalt wird zurückgegeben wenn vorhanden – ABER fehlende Top-Level-Keys (z.B. `projekte`) aus `_DEFAULT_CONTENT` auffüllen! Ohne Fix zeigt App neue Felder nicht an wenn DB-Eintrag noch ohne diesen Key existiert
+- **`/api/logout` NUR `firm_id`/`firm_name` löschen** – KEIN `session.clear()`! Admin-Session (`admin`-Key) muss erhalten bleiben, sonst kommt Admin nach Vorschau-Logout nicht mehr zurück
+- **Admin-Vorschau (`firm_id=0`):** `doLogout()` prüft `firmName === 'Admin-Vorschau'` → Redirect zu `/admin/`; Logout-Button zeigt „← Zurück zum Admin"
+- **Skills SSOT:** `edContent.skills` (Admin-Tab „Inhalte") ist einzige Quelle; `saveContent()` synchronisiert automatisch auf `cv.skills_cv`
+- **EN-Felder bei DE-Änderung leeren:** Punkte, Firma, Rolle, Bildungstitel – EN wird automatisch geleert wenn DE geändert wird → zwingt zur Neuübersetzung
+- **`require_firm_or_admin(request)`:** Hilfsfunktion – prüft `firm_id` ODER `admin` in Session → nutzen für Endpoints die beide Rollen brauchen (z.B. PDF-Download)
+- **`renderCvSkills()` null-check:** Das Element `#cv-skills-list` wurde nach dem SSOT-Refactor entfernt. Die Funktion enthält `if (!el) return;`. NICHT wieder entfernen, sonst bricht `loadLebenslauf()` mit TypeError ab und Engagement/Interessen werden nicht gerendert
+- **`telegram()` splittet Nachrichten >4096 Zeichen automatisch** (siehe `PKA/BKM/Telegram-Integration.md`)
+- **Header + Tabs gemeinsam sticky:** `<div class="sticky-top">` umschließt beide. Kein separates `position:sticky` für `.tabs` – sonst verschiebt sich die Tab-Zeile beim Scrollen
+- **`zeitraum`-Feld einsprachig:** Kein `zeitraum_de`/`zeitraum_en` – immer neutrales Format (z.B. "11/2018 –" statt "seit 11/2018" oder "since 11/2018") verwenden
+- **`institution`-Feld einsprachig:** Kein DE/EN für Ausbildungs-Institutionen – sprachspezifische Zusatztexte als `punkte[].de/en`-Einträge auslagern, NICHT direkt ins `institution`-Feld schreiben
+- **Projektnamen DE:** `name_de`-Feld muss explizit auf Deutsch gesetzt sein – default war englisch (z.B. "Community Event Calendar"). Immer `name_de` ≠ `name_en` prüfen bei neuen Projekten
+- **PDF-Header Kontakte:** `.h-contacts` nutzt `display: flex; flex-wrap: wrap; column-gap: 22px; row-gap: 8px;` – KEIN `gap`-Shorthand (würde column- und row-gap gleichsetzen, sieht ungleichmäßig aus). `.h-contact` hat `white-space: nowrap` damit kein interner Umbruch passiert.
+- **PDF Orphaned Headings:** `.sec-title` hat `break-after: avoid` – verhindert dass Abschnittsüberschriften alleine am Seitenende stehen. Nicht entfernen.
+- **PDF WeasyPrint – keine Emojis/Sonderzeichen:** WeasyPrint rendert Emojis (🌐) und viele Unicode-Sonderzeichen (⌂) nicht. Immer Inline-SVGs verwenden für Icons im PDF-Template.
 
 ## Token-Format
 
