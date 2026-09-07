@@ -2,7 +2,7 @@
 Bewerbungsseite Josef Fischer – Backend
 FastAPI + SQLite + Telegram | Port 5004
 """
-import os, sqlite3, secrets, string, json as json_lib
+import os, sqlite3, secrets, string, json as json_lib, logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -390,18 +390,23 @@ def _split_telegram_message(text: str, limit: int = 4096) -> list[str]:
     return parts
 
 
+_log = logging.getLogger("bewerbung.telegram")
+
 def telegram(msg: str):
     if not TG_BOT or not TG_CHAT:
+        _log.warning("Telegram nicht konfiguriert (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID fehlt)")
         return
-    try:
-        for part in _split_telegram_message(msg):
-            http.post(
+    for part in _split_telegram_message(msg):
+        try:
+            r = http.post(
                 f"https://api.telegram.org/bot{TG_BOT}/sendMessage",
                 json={"chat_id": TG_CHAT, "text": part, "parse_mode": "HTML"},
                 timeout=5,
             )
-    except Exception:
-        pass
+            if not r.ok:
+                _log.warning("Telegram-API-Fehler %s: %s", r.status_code, r.text[:300])
+        except Exception as e:
+            _log.warning("Telegram-Versand fehlgeschlagen: %s", type(e).__name__)
 
 def log_event(token_id: int, event_type: str, page: Optional[str], ip: str):
     with db() as con:
@@ -668,6 +673,13 @@ def admin_events(request: Request, firma_id: Optional[int] = None, limit: int = 
                 ORDER BY e.ts DESC LIMIT ?
             """, (limit,)).fetchall()
     return [dict(r) for r in rows]
+
+@app.delete("/api/admin/events/{event_id}")
+def admin_delete_event(event_id: int, request: Request):
+    require_admin(request)
+    with db() as con:
+        con.execute("DELETE FROM events WHERE id=?", (event_id,))
+    return {"ok": True}
 
 @app.get("/api/content")
 def get_content():

@@ -96,6 +96,8 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
 .event-firma { font-size: 13px; font-weight: 600; flex: 1; }
 .event-page  { font-size: 12px; color: var(--accent); }
 .event-ts    { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.event-del   { flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg2); color: var(--muted); font-size: 12px; cursor: pointer; line-height: 1; }
+.event-del:active { background: #450a0a; color: #fecaca; border-color: #ff3b30; }
 
 /* Kontakt-Liste */
 .kontakt-list { display: flex; flex-direction: column; gap: 10px; }
@@ -414,16 +416,18 @@ async function loadDashboard() {
   }
 }
 
-function eventRowHtml(e) {
+function eventRowHtml(e, showDelete) {
   const page = e.page ? `<span class="event-page">${e.page}</span>` : '';
   const ts   = e.ts ? e.ts.replace('T', ' ').slice(0, 16) : '';
   const type = e.event_type === 'login' ? 'login' : 'pageview';
   const label = e.event_type === 'login' ? 'Login' : e.page || 'View';
+  const del  = showDelete ? `<button class="event-del" onclick="deleteEvent(${e.id})" title="Löschen" aria-label="Eintrag löschen">✕</button>` : '';
   return `<div class="event-row">
     <div class="event-type"><span class="event-badge ${type}">${label}</span></div>
     <div class="event-firma">${e.firma_name || '?'}</div>
     ${page}
     <div class="event-ts">${ts}</div>
+    ${del}
   </div>`;
 }
 
@@ -531,7 +535,14 @@ function renderEvents() {
   const el = document.getElementById('event-list');
   const filtered = activeFilter ? allEvents.filter(e => e.firma_name === activeFilter) : allEvents;
   if (!filtered.length) { el.innerHTML = '<div class="empty">Keine Einträge</div>'; return; }
-  el.innerHTML = filtered.map(e => eventRowHtml(e)).join('');
+  el.innerHTML = filtered.map(e => eventRowHtml(e, true)).join('');
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Diesen Eintrag endgültig löschen?')) return;
+  await fetch(`/api/admin/events/${id}`, { method: 'DELETE' });
+  allEvents = allEvents.filter(e => e.id !== id);
+  renderEvents();
 }
 
 // ---------------------------------------------------------------------------
