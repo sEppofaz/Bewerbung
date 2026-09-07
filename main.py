@@ -681,6 +681,18 @@ def admin_delete_event(event_id: int, request: Request):
         con.execute("DELETE FROM events WHERE id=?", (event_id,))
     return {"ok": True}
 
+@app.post("/api/admin/events/delete-bulk")
+async def admin_delete_events_bulk(request: Request):
+    require_admin(request)
+    body = await request.json()
+    ids = [int(i) for i in (body.get("ids") or [])]
+    if not ids:
+        raise HTTPException(400, "Keine IDs übergeben")
+    with db() as con:
+        placeholders = ",".join("?" * len(ids))
+        con.execute(f"DELETE FROM events WHERE id IN ({placeholders})", ids)
+    return {"ok": True, "deleted": len(ids)}
+
 @app.get("/api/content")
 def get_content():
     return _get_content()

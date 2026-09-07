@@ -212,7 +212,10 @@ main { padding: 16px calc(16px + env(safe-area-inset-right)) calc(60px + env(saf
     <button class="filter-chip active" onclick="filterEvents(null, this)">Alle</button>
   </div>
   <div class="card">
-    <div class="card-title">Aktivitäts-Log</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0;">Aktivitäts-Log</div>
+      <button class="btn-sm danger" id="events-delete-all-btn" onclick="deleteAllFilteredEvents()" style="display:none;"></button>
+    </div>
     <div class="event-list" id="event-list"><div class="empty">Lade…</div></div>
   </div>
 </div>
@@ -534,6 +537,17 @@ function filterEvents(firma, btn) {
 function renderEvents() {
   const el = document.getElementById('event-list');
   const filtered = activeFilter ? allEvents.filter(e => e.firma_name === activeFilter) : allEvents;
+
+  const delAllBtn = document.getElementById('events-delete-all-btn');
+  if (filtered.length) {
+    delAllBtn.style.display = '';
+    delAllBtn.textContent = activeFilter
+      ? `Alle löschen (${filtered.length}, ${activeFilter})`
+      : `Alle löschen (${filtered.length})`;
+  } else {
+    delAllBtn.style.display = 'none';
+  }
+
   if (!filtered.length) { el.innerHTML = '<div class="empty">Keine Einträge</div>'; return; }
   el.innerHTML = filtered.map(e => eventRowHtml(e, true)).join('');
 }
@@ -542,6 +556,24 @@ async function deleteEvent(id) {
   if (!confirm('Diesen Eintrag endgültig löschen?')) return;
   await fetch(`/api/admin/events/${id}`, { method: 'DELETE' });
   allEvents = allEvents.filter(e => e.id !== id);
+  renderEvents();
+}
+
+async function deleteAllFilteredEvents() {
+  const filtered = activeFilter ? allEvents.filter(e => e.firma_name === activeFilter) : allEvents;
+  if (!filtered.length) return;
+  const label = activeFilter ? `alle ${filtered.length} Einträge von "${activeFilter}"` : `ALLE ${filtered.length} Einträge`;
+  if (!confirm(`${label} endgültig löschen?`)) return;
+  const ids = filtered.map(e => e.id);
+  await fetch('/api/admin/events/delete-bulk', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  });
+  const idSet = new Set(ids);
+  allEvents = allEvents.filter(e => !idSet.has(e.id));
+  activeFilter = null;
+  buildFilterBar();
   renderEvents();
 }
 
