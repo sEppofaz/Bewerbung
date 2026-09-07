@@ -167,6 +167,9 @@ server {
 - **`require_firm_or_admin(request)`:** Hilfsfunktion – prüft `firm_id` ODER `admin` in Session → nutzen für Endpoints die beide Rollen brauchen (z.B. PDF-Download)
 - **`renderCvSkills()` null-check:** Das Element `#cv-skills-list` wurde nach dem SSOT-Refactor entfernt. Die Funktion enthält `if (!el) return;`. NICHT wieder entfernen, sonst bricht `loadLebenslauf()` mit TypeError ab und Engagement/Interessen werden nicht gerendert
 - **`telegram()` splittet Nachrichten >4096 Zeichen automatisch** (siehe `PKA/BKM/Telegram-Integration.md`)
+- **`telegram()` loggt Fehler als Warning** (seit 2026-09-07, `logging.getLogger("bewerbung.telegram")`) – vorher `except: pass`, dadurch blieben fehlende `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` unbemerkt. Bei Problemen: `journalctl -u bewerbung` prüfen
+- **⚠️ Offen (2026-09-07):** `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` sind laut Log NICHT im Prozess-Environment vorhanden, obwohl `EnvironmentFile=/etc/pka/secrets.env` korrekt gesetzt ist (via `systemctl show` verifiziert). Josef muss selbst prüfen, ob die beiden Variablen (exakter Name!) in `secrets.env` stehen – Claude darf die Datei nicht öffnen
+- **Admin-Aktivitäts-Log löschbar:** `DELETE /api/admin/events/{id}` (seit 2026-09-07) – ✕-Button pro Zeile im Tab „Events", z.B. um Test-Logins zu entfernen
 - **Header + Tabs gemeinsam sticky:** `<div class="sticky-top">` umschließt beide. Kein separates `position:sticky` für `.tabs` – sonst verschiebt sich die Tab-Zeile beim Scrollen
 - **`zeitraum`-Feld einsprachig:** Kein `zeitraum_de`/`zeitraum_en` – immer neutrales Format (z.B. "11/2018 –" statt "seit 11/2018" oder "since 11/2018") verwenden
 - **`institution`-Feld einsprachig:** Kein DE/EN für Ausbildungs-Institutionen – sprachspezifische Zusatztexte als `punkte[].de/en`-Einträge auslagern, NICHT direkt ins `institution`-Feld schreiben
