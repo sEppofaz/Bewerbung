@@ -23,8 +23,8 @@ TEMPLATES_DIR = BASE / "templates"
 _jinja = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=False)
 
 ADMIN_TOKEN = os.environ.get("BEWERBUNG_ADMIN_TOKEN", "")
-TG_BOT      = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-TG_CHAT     = os.environ.get("TELEGRAM_CHAT_ID", "")
+TG_BOT      = os.environ.get("TOKEN", "")
+TG_CHAT     = os.environ.get("CHAT_ID", "")
 SECRET_KEY  = os.environ.get("BEWERBUNG_SECRET_KEY", secrets.token_hex(32))
 HTTPS_ONLY  = os.environ.get("HTTPS_ONLY", "true").lower() == "true"
 CLAUDE_KEY  = os.environ.get("CLAUDE_API_KEY", "")
